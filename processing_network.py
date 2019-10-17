@@ -1,0 +1,331 @@
+import random as r
+import numpy as np
+from network_dict import network_dictionary
+import itertools
+import copy
+
+
+
+class ProcessingNetwork:
+    # Multiclass Queuing Network class
+    def __init__(self, A, D, alpha, mu,  name):
+        self.alpha = np.asarray(alpha)  # arrival rates
+        self.mu = np.asarray(mu)  # service rates
+        self.uniform_rate = np.sum(alpha)+np.sum(mu)  # uniform rate for uniformization
+        self.p_arriving = np.divide(self.alpha, self.uniform_rate)
+        self.p_compl = np.divide(self.mu, self.uniform_rate)
+        self.cumsum_rates = np.unique(np.cumsum(np.asarray([self.p_arriving, self.p_compl])))
+
+        self.A = np.asarray(A)  # each row represents activity: -1 means job is departing, +1 means job is arriving
+        self.routing_matrix = 1 * (self.A > 0)
+        self.D = np.asarray(D)  # ith row represents buffers that associated to the ith stations
+
+        self.M = np.diag(1./self.mu)
+        self.alpha_total = np.dot(np.linalg.inv(np.eye(len(A)) - self.routing_matrix.T) , self.alpha[np.newaxis].T)
+        self.rho = np.dot(self.D,np.dot(self.M,self.alpha_total)) # load of each station
+
+        self.actionSize = np.prod(np.sum(D, axis=1))  # total number of possible actions
+        self.actionSize_per_buffer = [sum(D[i]) for i in range(len(D))]  # number of possible actions for each station
+        self.NumConstrains = np.shape(D)[0]  # number of stations
+        self.buffersNum = len(mu)  # number of buffers
+        self.networkName = name
+
+        if self.networkName[:11] == 'criss_cross' or self.networkName == 'reentrant': # choose "optimal" policy for comparison
+            self.comparison_policy = self.policy_list(name)
+        else:
+            self.comparison_policy = self.policy_list('LBFS')
+
+
+
+        self.dict_absolute_to_binaty_action, self.dict_absolute_to_per_server_action = self.absolute_to_binary()
+        self.list, self.next_state_list = self.next_state_list()
+
+
+    @classmethod
+    def from_name(cls, network_name: str):
+        # another constructor for the standard queuing networks
+        # based on a queuing network name, find the queuing network info in the 'network_dictionary.py'
+        return cls(A=network_dictionary[network_name]['A'],
+                   D=network_dictionary[network_name]['D'],
+                   alpha=network_dictionary[network_name]['alpha'],
+                   mu=network_dictionary[network_name]['mu'],
+                   name=network_dictionary[network_name]['name'])
+
+
+
+    def absolute_to_binary(self):
+        """
+        :return:
+        dict_absolute_to_binary_action: Python dictionary where keys are 'act_ind' action representation,
+                                        values are 'action_full' representation
+        dict_absolute_to_per_server_action: Python dictionary where keys are 'act_ind' action representation,
+                                            values are 'action_for_server' representation
+
+
+
+        act_ind - all possible actions are numerated GLOBALLY as 0, 1, 2, ...
+        action_full - buffers that have priority are equal to 1, otherwise 0
+        action_for_server - all possible actions FOR EACH STATIONS are numerated as 0, 1, 2, ...
+
+        For the simple reentrant line.
+        If priority is given to the first class:
+            act_ind = [0]
+            action_full = [1, 1, 0]
+            action_for_server = [0, 0]
+
+        If priority is given to the third class:
+            act_ind = [1]
+            action_full = [0, 1, 1]
+            action_for_server = [1, 0]
+        """
+
+        dict_absolute_to_binary_action = {}
+        dict_absolute_to_per_server_action = {}
+
+        actions_buffers = [[a] for a in range(self.actionSize_per_buffer[0])]
+
+        for ar_i in range(1, self.NumConstrains):
+            a =[]
+            for c in actions_buffers:
+                for b in range(self.actionSize_per_buffer[ar_i]):
+                    a.append(c+[b])
+            actions_buffers = a
+
+        assert len(actions_buffers) == self.actionSize
+        for i, k in enumerate(actions_buffers):
+            dict_absolute_to_binary_action[i] = self.action_to_binary(k)
+            dict_absolute_to_per_server_action[i] = k
+
+        return dict_absolute_to_binary_action, dict_absolute_to_per_server_action
+
+
+
+
+    def action_to_binary(self, act_ind):
+        """
+        change action representation
+        :param act_ind: all possible actions are numerated GLOBALLY as 0, 1, 2, ...
+        :return: buffers that have priority are equal to 1, otherwise 0
+
+
+        For the simple reentrant line.
+        If priority is given to the first class:
+        act_ind = [0]
+        action_full = [1, 1, 0]
+
+
+        If priority is given to the third class:
+        act_ind = [1]
+        action_full = [0, 1, 1]
+        """
+
+        action_full = np.zeros(self.buffersNum)
+        for i in range(len(self.D)):
+            res_act = act_ind[i]
+            k = -1
+
+            for act in range(len(self.D[0])):
+                if self.D[i][act] == 1:
+                    k += 1
+                    if res_act == k:
+                        break
+            action_full[act] = 1
+
+        return action_full
+
+    def next_state(self, state, action):
+        """
+        generate the next state
+        :param state: current state
+        :param action: action
+        :return: next state
+        """
+        w = r.random()
+        wi = 0
+        while w > self.cumsum_rates[wi]:
+            wi+=1 #  activity that will be processed
+
+        q = np.asarray(state) > 0 # list of non-empty and empty buffers
+        actions_coin = (action[int(wi - np.sum(self.alpha > 0))] == 1)  # indicates if the activity is legitimate
+
+        state_next = state + self.list[(tuple(q), actions_coin, wi)]
+        return state_next
+
+
+    def next_state_list(self):
+        """
+        :return:
+        list: Python dictionary s.t. keys are ( state > 0, action, activity), values are jobs transitions
+        list_next_states: set of all possible jobs transitions
+        """
+        list = {}
+        s_D = np.shape(self.D)
+
+
+        #### compute the set of all posible actions ########################
+        set_act = []
+        actions = [s for s in itertools.product([0, 1], repeat=self.buffersNum)]
+        for a in actions:
+            i=0
+            while i != s_D[0]:
+                d = np.asarray(self.D[i])
+                if np.dot(d, np.asarray(a))!= 1:
+                    break
+                i += 1
+            if i == s_D[0]:
+                set_act.append(a)
+
+        self.actions = set_act # set of all possible actions
+        #######################
+
+        adjoint_buffers = {} # Python dictionary: key is a buffer, value is a list of bufferes associated to the same station
+        for i in range(0, s_D[0]):
+            for j in range(0, s_D[1]):
+                if self.D[i][j] ==1:
+                    d = copy.copy(self.D[i])  # TODO: np.copy?
+                    d[j] = 0
+                    adjoint_buffers[j] = copy.copy(d)
+
+
+
+        for a in [False, True]:#self.actions:  # indicator that activity 'w' is legitimate
+            for s in itertools.product([0, 1], repeat=self.buffersNum):  # combination of non-empty, empty buffers
+                for w in range(0, int(np.sum(self.alpha>0)+np.sum(self.mu>0))):  # activity
+
+                        ar = np.asarray(s, 'int8')
+                        if w < np.sum(self.alpha>0):  # arrival activity
+                            el = np.nonzero(self.alpha)[0][w]
+                            arriving = np.zeros(self.buffersNum, 'int8')
+                            arriving[el] = 1
+                            list[(tuple(ar), a, w)] = arriving
+                        elif ar[w - np.sum(self.alpha>0)]>0 and \
+                                (a or np.sum(np.dot(ar, adjoint_buffers[w - np.sum(self.alpha>0)]))==0):# service activity is possible
+                            list[(tuple(ar), a, w)] = self.A[w - np.sum(self.alpha>0)]
+
+                        else:  # service activity is not possible. Fake transition
+                            list[(tuple(ar), a, w)] = np.zeros(self.buffersNum, 'int8')
+
+
+        list_next_states = np.asarray([ list[(tuple(np.ones(self.buffersNum)), 1, w)] for w in range(0, int(np.sum(self.alpha>0)+np.sum(self.mu>0)))])
+        return list, list_next_states
+
+
+    # TODO: simplify the method
+    def policy_list(self, policy):
+        """
+        :param policy: name of the queuing network
+        :return: optimal policy for the queuing network for comparison
+        """
+
+
+        if policy == 'criss_cross':
+            p = np.load('policy, criss-cross, n=140, average, 15.1915.npy')
+
+            list = p.item()
+        elif policy == 'criss_crossIH':
+            p = np.load('policy, criss-crossIH, skipping=1, n = 150, beta = 1, ac = 9.964.npy')
+
+            list = p.item()
+        elif policy == 'criss_crossBM':
+            p = np.load('policy, criss-crossBM, skipping=1, n = 150, beta = 1, ac = 2.82.npy')
+
+            list = p.item()
+        elif policy == 'criss_crossIM':
+            p = np.load('policy, criss-crossIM, skipping=1, n = 150, beta = 1, ac = 2.079.npy')
+
+            list = p.item()
+        elif policy == 'criss_crossBL':
+            p = np.load('policy, criss-crossBL, skipping=1, n = 150, beta = 1, ac = 0.841.npy')
+
+            list = p.item()
+        elif policy == 'criss_crossBL':
+            p = np.load('criss-crossBL, skipping=1, n = 150, beta = 1, ac = 0.842.npy')
+
+            list = p.item()
+        elif policy == 'criss_crossIL':
+            p = np.load('policy, criss-crossIL, skipping=1, n = 150, beta = 1, ac = 0.67.npy')
+
+            list = p.item()
+
+        elif policy == 'reentrant':
+            p = np.load('policy, RV_reentrance, n=140, disc = 0.9998, 25.58434.npy')
+
+            list = p.item()
+
+
+        else:
+            list = {}
+
+            for state in itertools.product([0, 1], repeat=self.buffersNum):
+                a = np.zeros(np.size(state), 'int8')
+                state = np.asarray(state, 'int8')
+
+
+                for k in range(0, self.NumConstrains):
+                    d = self.D[k]
+
+                    d_nz = np.transpose(np.nonzero(d))
+
+
+
+                    if policy == 'FBFS':
+                        j = 0
+                        while state[d_nz[j]] == 0:
+                            j += 1
+                            if j == len(d_nz):
+                                j -= 1
+                                break
+
+                        a[d_nz[j]] = 1
+
+                    elif policy == 'LBFS':
+                        j = len(d_nz) - 1
+                        while state[d_nz[j]] == 0:
+                            j -= 1
+                            if j == -1:
+                                j += 1
+                                break
+                        a[d_nz[j]] = 1
+                    elif policy == 'cmu':
+                        ind = np.argsort(self.p_compl * d)
+                        j = len(d) - 1
+                        while state[ind[j]] == 0:
+                            j -= 1
+                            if j == -1 or d[ind[j]] == 0:
+                                j += 1
+                                break
+
+                        a[ind[j]] = 1
+
+                list[tuple(state)] = a
+
+        return list
+
+    # TODO: generalize and simplify
+    def next_state_prob(self, states_array):
+        """
+        Compute probability of each transition for each action for the criss-cross network
+        :param states_array: array of states
+        :return: probability of each transition
+        array1 - if priority is given to class 1
+        array3 - if priority is given to class 3
+        """
+        states = np.heaviside(states_array, 0)
+
+        P3 = np.array([[0,0,1,0,0], [0,0,0,1,0], [0,0,-1,0,1]])
+        P1 = np.array([[0,0,1,0,-1], [0,0,0,1,0], [0,0, 0,0,1]])
+
+        prob3 = (np.heaviside(states @ P3, 0) +  np.array([1, 1, 0, 0, 0]))@ \
+              np.diag(np.hstack([self.p_arriving[self.p_arriving>0], self.p_compl[self.p_compl>0]]))
+        a3 = 1 - np.sum(prob3, axis=1)
+        array3 = np.hstack([prob3, a3[:, np.newaxis]])
+
+        prob1 = (np.heaviside(states @ P1, 0) +  np.array([1, 1, 0, 0, 0]))@ \
+              np.diag(np.hstack([self.p_arriving[self.p_arriving>0], self.p_compl[self.p_compl>0]]))
+
+
+        a1 = 1 - np.sum(prob1, axis=1)
+        array1 = np.hstack([prob1, a1[:, np.newaxis]])
+
+
+        return array3, array1
