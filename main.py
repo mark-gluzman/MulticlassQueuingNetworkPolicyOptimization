@@ -181,30 +181,32 @@ def add_disc_sum_rew(trajectory, policy, network, gamma, lam, scaler):
     probab_of_actions = policy.sample(observes) # probability of choosing actions according to a NN policy
     distr = probab_of_actions[0] / np.sum(probab_of_actions[0], axis=1)[:,np.newaxis] # the distribution pre-processing
 
-    array = network.next_state_prob(unscaled_obs) # transition probabilities for fixed actions
-    array3, array1 = array[1], array[0]
+    action_array = network.next_state_prob(unscaled_obs) # transition probabilities for fixed actions
+
     # expectation of the value function for fixed actions
-    c = np.vstack([diag_dot(array1, trajectory['values_set'].T) , diag_dot(array3, trajectory['values_set'].T)])
-    P_pi = diag_dot(distr, c)  # expectation of the value function
+    value_for_each_action_list = []
+    for act in action_array:
+        value_for_each_action_list.append(diag_dot(act, trajectory['values_set'].T))
+    value_for_each_action = np.vstack(value_for_each_action_list)
+
+    P_pi = diag_dot(distr, value_for_each_action)  # expectation of the value function
     ##############################################################################################################
 
-    ############ expectation of the value function w.r.t the actual actions in simulation####################
-    nb_classes = 2
+    # expectation of the value function w.r.t the actual actions in data
+    num_actions = len(network.actions)
     targets = trajectory['actions'][:, 0].reshape(-1)
-    distr_fir = np.eye(nb_classes)[targets]
-    P_a = diag_dot(distr_fir, c)
-    ##############################################################################################################
+    distr_fir = np.eye(num_actions)[targets]
+    P_a = diag_dot(distr_fir, value_for_each_action)
 
-    ######### td-error computing #######################
+
+    # td-error computing
     tds_pi = trajectory['rewards'] - values + P_pi[:, np.newaxis]#np.append(values[1:] * gamma, np.zeros((1, 1)), axis=0)#
     tds_a = trajectory['rewards'] - values + P_a[:, np.newaxis]#np.append(values[1:] * gamma, np.zeros((1, 1)), axis=0)#
-    ################################
 
     advantages = relarive_vf(unscaled_obs, td_pi = tds_pi, td_act = tds_a, lam=lam)# advantage function
     trajectory['advantages'] = np.asarray(advantages)
 
-
-    ########### value function computing for futher neural network training#########
+    # value function computing for futher neural network training
     #TODO: ensure that gamma<1 works
     if gamma < 1:
         disc_sum_rew = discount(trajectory['rewards'], gamma, trajectory['values'][-1])
@@ -212,8 +214,6 @@ def add_disc_sum_rew(trajectory, policy, network, gamma, lam, scaler):
         disc_sum_rew = relarive_vf(unscaled_obs, td_pi = tds_pi, td_act =  tds_pi, lam=lam ) + values - values[0]
     trajectory['disc_sum_rew'] = disc_sum_rew
     scaler.update(np.hstack((trajectory['unscaled_obs'], trajectory['disc_sum_rew'])))
-    ########################################################
-
 
 
 def discount(x, gamma, v_last):
@@ -256,7 +256,7 @@ def add_value(trajectory_whole, val_func, scaler, possible_states):
     values = val_func.predict(trajectory_whole['observes'])
     trajectory_whole['values'] = values / scale[-1] + offset[-1]
 
-    ### approximate value function of the states where transitions are possible from trajectory_whole['unscaled_obs']###
+    # approximate value function of the states where transitions are possible from trajectory_whole['unscaled_obs']
     values_set = np.zeros(( len(possible_states)+1, len(trajectory_whole['observes'])))
     values_set[-1] = np.squeeze(trajectory_whole['values'])
     for count, trans in enumerate(possible_states):
@@ -266,7 +266,7 @@ def add_value(trajectory_whole, val_func, scaler, possible_states):
         values_set[count] = np.squeeze(values)
 
     trajectory_whole['values_set'] = values_set.T
-    ############################################################################################
+
 
 
 
