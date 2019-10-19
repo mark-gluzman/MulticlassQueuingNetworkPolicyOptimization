@@ -24,13 +24,14 @@ class ProcessingNetwork:
         self.alpha_total = np.dot(np.linalg.inv(np.eye(len(A)) - self.routing_matrix.T) , self.alpha[np.newaxis].T)
         self.rho = np.dot(self.D,np.dot(self.M,self.alpha_total)) # load of each station
 
-        self.actionSize = np.prod(np.sum(D, axis=1))  # total number of possible actions
-        self.actionSize_per_buffer = [sum(D[i]) for i in range(len(D))]  # number of possible actions for each station
-        self.NumConstrains = np.shape(D)[0]  # number of stations
-        self.buffersNum = len(mu)  # number of buffers
-        self.networkName = name
+        self.action_size = np.prod(np.sum(D, axis=1))  # total number of possible actions
+        self.action_size_per_buffer = [sum(D[i]) for i in range(len(D))]  # number of possible actions for each station
+        self.stations_num = np.shape(D)[0]  # number of stations
+        self.buffers_num = len(mu)  # number of buffers
+        self.activities_num = len(self.cumsum_rates)  # number of activities
+        self.network_name = name
 
-        if self.networkName[:11] == 'criss_cross' or self.networkName == 'reentrant': # choose "optimal" policy for comparison
+        if self.network_name[:11] == 'criss_cross' or self.network_name == 'reentrant': # choose "optimal" policy for comparison
             self.comparison_policy = self.policy_list(name)
         else:
             self.comparison_policy = self.policy_list('LBFS')
@@ -82,16 +83,16 @@ class ProcessingNetwork:
         dict_absolute_to_binary_action = {}
         dict_absolute_to_per_server_action = {}
 
-        actions_buffers = [[a] for a in range(self.actionSize_per_buffer[0])]
+        actions_buffers = [[a] for a in range(self.action_size_per_buffer[0])]
 
-        for ar_i in range(1, self.NumConstrains):
+        for ar_i in range(1, self.stations_num):
             a =[]
             for c in actions_buffers:
-                for b in range(self.actionSize_per_buffer[ar_i]):
+                for b in range(self.action_size_per_buffer[ar_i]):
                     a.append(c+[b])
             actions_buffers = a
 
-        assert len(actions_buffers) == self.actionSize
+        assert len(actions_buffers) == self.action_size
         for i, k in enumerate(actions_buffers):
             dict_absolute_to_binary_action[i] = self.action_to_binary(k)
             dict_absolute_to_per_server_action[i] = k
@@ -119,7 +120,7 @@ class ProcessingNetwork:
         action_full = [0, 1, 1]
         """
 
-        action_full = np.zeros(self.buffersNum)
+        action_full = np.zeros(self.buffers_num)
         for i in range(len(self.D)):
             res_act = act_ind[i]
             k = -1
@@ -164,7 +165,7 @@ class ProcessingNetwork:
 
         #### compute the set of all posible actions ########################
         set_act = []
-        actions = [s for s in itertools.product([0, 1], repeat=self.buffersNum)]
+        actions = [s for s in itertools.product([0, 1], repeat=self.buffers_num)]
         for a in actions:
             i=0
             while i != s_D[0]:
@@ -185,17 +186,16 @@ class ProcessingNetwork:
                     d = copy.copy(self.D[i])  # TODO: np.copy?
                     d[j] = 0
                     adjoint_buffers[j] = copy.copy(d)
-
-
+        self.adjoint_buffers = adjoint_buffers
 
         for a in [False, True]:#self.actions:  # indicator that activity 'w' is legitimate
-            for s in itertools.product([0, 1], repeat=self.buffersNum):  # combination of non-empty, empty buffers
+            for s in itertools.product([0, 1], repeat=self.buffers_num):  # combination of non-empty, empty buffers
                 for w in range(0, int(np.sum(self.alpha>0)+np.sum(self.mu>0))):  # activity
 
                         ar = np.asarray(s, 'int8')
                         if w < np.sum(self.alpha>0):  # arrival activity
                             el = np.nonzero(self.alpha)[0][w]
-                            arriving = np.zeros(self.buffersNum, 'int8')
+                            arriving = np.zeros(self.buffers_num, 'int8')
                             arriving[el] = 1
                             list[(tuple(ar), a, w)] = arriving
                         elif ar[w - np.sum(self.alpha>0)]>0 and \
@@ -203,10 +203,10 @@ class ProcessingNetwork:
                             list[(tuple(ar), a, w)] = self.A[w - np.sum(self.alpha>0)]
 
                         else:  # service activity is not possible. Fake transition
-                            list[(tuple(ar), a, w)] = np.zeros(self.buffersNum, 'int8')
+                            list[(tuple(ar), a, w)] = np.zeros(self.buffers_num, 'int8')
 
 
-        list_next_states = np.asarray([ list[(tuple(np.ones(self.buffersNum)), 1, w)] for w in range(0, int(np.sum(self.alpha>0)+np.sum(self.mu>0)))])
+        list_next_states = np.asarray([ list[(tuple(np.ones(self.buffers_num)), 1, w)] for w in range(0, int(np.sum(self.alpha>0)+np.sum(self.mu>0)))])
         return list, list_next_states
 
 
@@ -256,12 +256,12 @@ class ProcessingNetwork:
         else:
             list = {}
 
-            for state in itertools.product([0, 1], repeat=self.buffersNum):
+            for state in itertools.product([0, 1], repeat=self.buffers_num):
                 a = np.zeros(np.size(state), 'int8')
                 state = np.asarray(state, 'int8')
 
 
-                for k in range(0, self.NumConstrains):
+                for k in range(0, self.stations_num):
                     d = self.D[k]
 
                     d_nz = np.transpose(np.nonzero(d))
@@ -301,31 +301,39 @@ class ProcessingNetwork:
 
         return list
 
-    # TODO: generalize and simplify
+
     def next_state_prob(self, states_array):
         """
         Compute probability of each transition for each action for the criss-cross network
         :param states_array: array of states
         :return: probability of each transition
-        array1 - if priority is given to class 1
-        array3 - if priority is given to class 3
         """
-        states = np.heaviside(states_array, 0)
+        states = 1*(states_array > 0)
+        arrivals_num = self.activities_num - self.buffers_num # number of arrival flows
+        prod_for_actions_list = []
+        for action_ind, action in enumerate(self.actions):
+            #'constr_trans[i, j]' equals to 1 if ith buffer has to be non-empty (-1 -- empty)
+            # to make jth activity possible
+            constr_trans = np.zeros((self.buffers_num, self.activities_num))
+            for b_i in range(self.buffers_num):
+                constr_trans[b_i, b_i + arrivals_num] = 1
+                if action[b_i] == 0:
+                    for adj_buf_i in np.nonzero(self.adjoint_buffers[b_i]):
+                        constr_trans[b_i, adj_buf_i + arrivals_num] = -1
 
-        P3 = np.array([[0,0,1,0,0], [0,0,0,1,0], [0,0,-1,0,1]])
-        P1 = np.array([[0,0,1,0,-1], [0,0,0,1,0], [0,0, 0,0,1]])
+            # activities legitimacy for the actual data
+            possible_activities = 1*((states @ constr_trans) > 0)
+            for arv_i in range(arrivals_num):
+                possible_activities[:, arv_i] = 1
 
-        prob3 = (np.heaviside(states @ P3, 0) +  np.array([1, 1, 0, 0, 0]))@ \
-              np.diag(np.hstack([self.p_arriving[self.p_arriving>0], self.p_compl[self.p_compl>0]]))
-        a3 = 1 - np.sum(prob3, axis=1)
-        array3 = np.hstack([prob3, a3[:, np.newaxis]])
+            # probability for each activity, except fake one
+            prob = possible_activities @ np.diag(np.hstack([self.p_arriving[self.p_arriving > 0], self.p_compl[self.p_compl > 0]]))
 
-        prob1 = (np.heaviside(states @ P1, 0) +  np.array([1, 1, 0, 0, 0]))@ \
-              np.diag(np.hstack([self.p_arriving[self.p_arriving>0], self.p_compl[self.p_compl>0]]))
+            prob_fake_transition = 1 - np.sum(prob, axis=1)  # probability of a fake transition
+            prod_for_actions = np.hstack([prob, prob_fake_transition[:, np.newaxis]])
+            prod_for_actions_list.append(prod_for_actions)
 
-
-        a1 = 1 - np.sum(prob1, axis=1)
-        array1 = np.hstack([prob1, a1[:, np.newaxis]])
+        return prod_for_actions_list
 
 
-        return array3, array1
+

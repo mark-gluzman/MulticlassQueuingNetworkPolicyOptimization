@@ -181,8 +181,8 @@ def add_disc_sum_rew(trajectory, policy, network, gamma, lam, scaler):
     probab_of_actions = policy.sample(observes) # probability of choosing actions according to a NN policy
     distr = probab_of_actions[0] / np.sum(probab_of_actions[0], axis=1)[:,np.newaxis] # the distribution pre-processing
 
-    array3, array1 = network.next_state_prob(unscaled_obs) # transition probabilities for fixed actions
-
+    array = network.next_state_prob(unscaled_obs) # transition probabilities for fixed actions
+    array3, array1 = array[1], array[0]
     # expectation of the value function for fixed actions
     c = np.vstack([diag_dot(array1, trajectory['values_set'].T) , diag_dot(array3, trajectory['values_set'].T)])
     P_pi = diag_dot(distr, c)  # expectation of the value function
@@ -341,11 +341,11 @@ def main(network_id, num_policy_iterations, gamma, lam, kl_targ, batch_size, hid
     """
 
 
-    obs_dim = ray.get(network_id).buffersNum
-    act_dim = ray.get(network_id).actionSize_per_buffer
+    obs_dim = ray.get(network_id).buffers_num
+    act_dim = ray.get(network_id).action_size_per_buffer
     now = datetime.datetime.utcnow().strftime("%b-%d_%H-%M-%S")  # create unique directories
     time_start= datetime.datetime.now()
-    logger = Logger(logname=ray.get(network_id).networkName, now=now, time_start=time_start)
+    logger = Logger(logname=ray.get(network_id).network_name, now=now, time_start=time_start)
 
 
     scaler = Scaler(obs_dim + 1, initial_state_procedure)
