@@ -38,7 +38,8 @@ class ProcessingNetwork:
 
 
 
-        self.dict_absolute_to_binaty_action, self.dict_absolute_to_per_server_action = self.absolute_to_binary()
+        self.dict_absolute_to_binary_action, self.dict_absolute_to_per_server_action = self.absolute_to_binary()
+        self.actions = list(self.dict_absolute_to_binary_action.values())  # list of all actions
         self.list, self.next_state_list = self.next_state_list()
 
 
@@ -96,6 +97,8 @@ class ProcessingNetwork:
         for i, k in enumerate(actions_buffers):
             dict_absolute_to_binary_action[i] = self.action_to_binary(k)
             dict_absolute_to_per_server_action[i] = k
+
+
 
         return dict_absolute_to_binary_action, dict_absolute_to_per_server_action
 
@@ -162,7 +165,7 @@ class ProcessingNetwork:
         list = {}
         s_D = np.shape(self.D)
 
-
+        '''
         #### compute the set of all posible actions ########################
         set_act = []
         actions = [s for s in itertools.product([0, 1], repeat=self.buffers_num)]
@@ -178,8 +181,9 @@ class ProcessingNetwork:
 
         self.actions = set_act # set of all possible actions
         #######################
+        '''
 
-        adjoint_buffers = {} # Python dictionary: key is a buffer, value is a list of bufferes associated to the same station
+        adjoint_buffers = {} # Python dictionary: key is a buffer, value is a list of buffers associated to the same station
         for i in range(0, s_D[0]):
             for j in range(0, s_D[1]):
                 if self.D[i][j] ==1:
@@ -319,7 +323,7 @@ class ProcessingNetwork:
                 constr_trans[b_i, b_i + arrivals_num] = 1
                 if action[b_i] == 0:
                     for adj_buf_i in np.nonzero(self.adjoint_buffers[b_i]):
-                        constr_trans[b_i, adj_buf_i + arrivals_num] = -1
+                        constr_trans[adj_buf_i,  b_i + arrivals_num] = -1
 
             # activities legitimacy for the actual data
             possible_activities = 1*((states @ constr_trans) > 0)
@@ -334,6 +338,27 @@ class ProcessingNetwork:
             prod_for_actions_list.append(prod_for_actions)
 
         return prod_for_actions_list
+
+    def next_state_prob2(self, states_array):
+
+        states = np.heaviside(states_array, 0)
+
+        P3 = np.array([[0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, -1, 0, 1]])
+        P1 = np.array([[0, 0, 1, 0, -1], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]])
+
+        prob3 = (np.heaviside(states @ P3, 0) + np.array([1, 1, 0, 0, 0])) @ \
+                np.diag(np.hstack([self.p_arriving[self.p_arriving > 0], self.p_compl[self.p_compl > 0]]))
+
+        a3 = 1 - np.sum(prob3, axis=1)
+        array3 = np.hstack([prob3, a3[:, np.newaxis]])
+
+        prob1 = (np.heaviside(states @ P1, 0) + np.array([1, 1, 0, 0, 0])) @ \
+                np.diag(np.hstack([self.p_arriving[self.p_arriving > 0], self.p_compl[self.p_compl > 0]]))
+
+        a1 = 1 - np.sum(prob1, axis=1)
+        array1 = np.hstack([prob1, a1[:, np.newaxis]])
+
+        return array3, array1
 
 
 

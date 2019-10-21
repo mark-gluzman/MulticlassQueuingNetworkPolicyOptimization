@@ -132,7 +132,6 @@ class Policy(object):
             self.kl += tf.reduce_mean(kl, axis=0)
 
 
-
     def _loss_train_op(self):
         """
         Calculate the PPO loss function
@@ -165,9 +164,6 @@ class Policy(object):
                 ar[inx] = 1
                 determ_prob.extend([ar[np.newaxis]])
             return determ_prob
-
-
-
 
 
     def update(self, observes, actions, advantages, logger):
@@ -240,10 +236,10 @@ class Policy(object):
         action_optimal_sum = 0 # count actions that coinside with the optimal policy
         total_zero_steps = 0 # count states for which all actions are optimal
 
-        observes = np.zeros((time_steps, network.buffersNum))
-        actions = np.zeros((time_steps, network.NumConstrains), 'int8')
+        observes = np.zeros((time_steps, network.buffers_num))
+        actions = np.zeros((time_steps, network.stations_num), 'int8')
         rewards = np.zeros((time_steps, 1))
-        unscaled_obs = np.zeros((time_steps, network.buffersNum), 'int32')
+        unscaled_obs = np.zeros((time_steps, network.buffers_num), 'int32')
 
 
         for cyc in range(cycles_num):
@@ -269,7 +265,7 @@ class Policy(object):
                     act_distr = self.sample([state_input])
                     policy_buffer[tuple(state)] =act_distr
                 distr = policy_buffer[tuple(state)][0][0] # distribution for each station
-                for ar_i in range(1, network.NumConstrains):
+                for ar_i in range(1, network.stations_num):
                     distr = [a*b for a in distr for b in policy_buffer[tuple(state)][ar_i][0]]
                 distr = distr / sum(distr)
                 ############################################
@@ -291,7 +287,7 @@ class Policy(object):
                     action_for_server = [1, 0]
                 """
                 act_ind = np.random.choice(len(distr), 1, p=distr) # sample action according to distribution 'distr'
-                action_full = network.dict_absolute_to_binaty_action[act_ind[0]]
+                action_full = network.dict_absolute_to_binary_action[act_ind[0]]
                 action_for_server = network.dict_absolute_to_per_server_action[act_ind[0]]
 
                 ######### check optimality of the sampled action ################
@@ -317,30 +313,16 @@ class Policy(object):
                      state = network.next_state(state, action_full) # move to the next state
                 t+=1
 
-
-
-
-
-
-
-
-
-
             total_steps += len(actions[:t])
             # record simulation
             trajectory = {#'observes': observes,
                           'actions': actions[:t],
                           'rewards': rewards[:t] / skipping_steps,
                           'unscaled_obs': unscaled_obs[:t]
-
                       }
 
             trajectories.append(trajectory)
-
-
         return trajectories, total_steps, action_optimal_sum, total_zero_steps
-
-
 
 
     def close_sess(self):
@@ -355,7 +337,6 @@ class Policy(object):
 
     def get_act_dim(self):
         return self.act_dim
-
 
     def get_weights(self):
         return self.variables.get_weights()

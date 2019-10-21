@@ -101,9 +101,10 @@ def run_policy(network_id, policy, scaler, logger, gamma, cycles_num,
         total_zero_steps += accum_res[i][3]  # absolute number of states for which all actions are optimal
     #################################################
 
+
     optimal_ratio = action_optimal_sum / (total_steps * skipping_steps)  # fraction of actions that are optimal
     # fraction of actions that are optimal excluding transitions when all actions are optimal
-    pure_optimal_ratio = (action_optimal_sum  - total_zero_steps)/ (total_steps * skipping_steps - total_zero_steps)
+    pure_optimal_ratio = (action_optimal_sum - total_zero_steps)/ (total_steps * skipping_steps - total_zero_steps)
 
     ###### average performance computation #############
     cycle_lenght = 0
@@ -143,7 +144,6 @@ def run_policy(network_id, policy, scaler, logger, gamma, cycles_num,
 
 
 
-
     ########## results report ##########################
     print('Average cost: ',  -average_reward)
 
@@ -155,10 +155,6 @@ def run_policy(network_id, policy, scaler, logger, gamma, cycles_num,
     })
     ####################################################
     return trajectory_whole
-
-
-
-
 
 def add_disc_sum_rew(trajectory, policy, network, gamma, lam, scaler):
     """
@@ -177,9 +173,14 @@ def add_disc_sum_rew(trajectory, policy, network, gamma, lam, scaler):
 
 
     ####### compute expectation of the value function of the next state ###########
-    # TODO: generalize expectation computation beyond the criss-cross network
     probab_of_actions = policy.sample(observes) # probability of choosing actions according to a NN policy
-    distr = probab_of_actions[0] / np.sum(probab_of_actions[0], axis=1)[:,np.newaxis] # the distribution pre-processing
+
+    distr = np.array(probab_of_actions[0].T)
+    for ar_i in range(1, network.stations_num):
+        distr = [a * b for a in distr for b in np.array(probab_of_actions[ar_i].T)]
+
+    distr = np.array(distr).T
+    distr = distr / np.sum(distr, axis=1)[:, np.newaxis]  # normalization
 
     action_array = network.next_state_prob(unscaled_obs) # transition probabilities for fixed actions
 
@@ -211,10 +212,9 @@ def add_disc_sum_rew(trajectory, policy, network, gamma, lam, scaler):
     if gamma < 1:
         disc_sum_rew = discount(trajectory['rewards'], gamma, trajectory['values'][-1])
     else:
-        disc_sum_rew = relarive_vf(unscaled_obs, td_pi = tds_pi, td_act =  tds_pi, lam=lam ) + values - values[0]
+        disc_sum_rew = relarive_vf(unscaled_obs, td_pi = tds_pi, td_act = tds_pi, lam=lam ) + values - values[0]
     trajectory['disc_sum_rew'] = disc_sum_rew
     scaler.update(np.hstack((trajectory['unscaled_obs'], trajectory['disc_sum_rew'])))
-
 
 def discount(x, gamma, v_last):
         # return discounted value function
@@ -224,8 +224,6 @@ def discount(x, gamma, v_last):
             disc_array[i] = x[i] + gamma * disc_array[i + 1]
 
         return disc_array
-
-
 
 def relarive_vf(unscaled_obs, td_pi, td_act, lam):
     # return advantage function
@@ -266,11 +264,6 @@ def add_value(trajectory_whole, val_func, scaler, possible_states):
         values_set[count] = np.squeeze(values)
 
     trajectory_whole['values_set'] = values_set.T
-
-
-
-
-
 
 def build_train_set(trajectory_whole, scaler):
     """
@@ -368,9 +361,6 @@ def main(network_id, num_policy_iterations, gamma, lam, kl_targ, batch_size, hid
         run_policy(network_id, policy, scaler, logger, gamma, cycles_num, 0, skipping_steps,   episodes=1, time_steps=episode_duration)
     ###########################################################################
 
-
-
-
     iteration = 0  # count of policy iterations
     while iteration < num_policy_iterations:
         # decrease clipping_range and learning rate
@@ -386,20 +376,18 @@ def main(network_id, num_policy_iterations, gamma, lam, kl_targ, batch_size, hid
         trajectory_whole = run_policy(network_id, policy, scaler, logger, gamma, cycles_num, iteration, skipping_steps,
                                       episodes=batch_size, time_steps=episode_duration) #simulation
 
-        scale, offset = scaler.get()
-
         add_value(trajectory_whole, val_func, scaler, ray.get(network_id).next_state_list)  # add estimated values to episodes
         add_disc_sum_rew(trajectory_whole, policy, ray.get(network_id), gamma, lam, scaler)  # calculate values from data
         observes, unscaled_obs, actions, advantages, disc_sum_rew, states_sum, states_number, states_positions = build_train_set(trajectory_whole, scaler)
 
 
+        scale, offset = scaler.get()
+        log_batch_stats(observes, actions, advantages, disc_sum_rew, logger, iteration)  # add various stats
+        policy.update(observes, actions, np.squeeze(advantages), logger)  # update policy
+
+
         disc_sum_rew_norm = (disc_sum_rew - offset[-1]) * scale[-1]
         val_func.fit(observes, disc_sum_rew_norm, logger)  # update value function
-
-
-        log_batch_stats(observes, actions, advantages, disc_sum_rew, logger, iteration) # add various stats
-
-        policy.update(observes, actions, np.squeeze(advantages), logger)  # update policy
 
         logger.write(display=True)  # write logger results to file and stdout
 
@@ -476,7 +464,7 @@ if __name__ == "__main__":
     parser.add_argument('-g', '--gamma', type=float, help='Discount factor',
                         default = 1)
     parser.add_argument('-l', '--lam', type=float, help='Lambda for Generalized Advantage Estimation',
-                        default = 0.2)
+                        default = 0.7)
     parser.add_argument('-k', '--kl_targ', type=float, help='D_KL target value',
                         default = 0.003)
     parser.add_argument('-b', '--batch_size', type=int, help='Number of episodes per training batch',
@@ -484,7 +472,7 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--hid1_mult', type=int, help='Size of first hidden layer for value and policy NNs',
                         default = 10)
     parser.add_argument('-t', '--episode_duration', type=int, help='Number of time-steps per an episode',
-                        default = 100*10**3)
+                        default = 100*10**4)
     parser.add_argument('-y', '--cycles_num', type=int, help='Number of cycles',
                         default = 50)
     parser.add_argument('-c', '--clipping_parameter', type=float, help='Initial clipping parameter',
