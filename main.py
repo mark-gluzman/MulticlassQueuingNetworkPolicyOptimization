@@ -142,6 +142,9 @@ def run_policy(network_id, policy, scaler, logger, gamma, cycles_num,
     }
     ##########################################################
 
+    if scaler.initial_states_procedure=='previous_iteration':
+        scaler.update_initial(unscaled_obs)
+
 
 
     ########## results report ##########################
@@ -204,7 +207,7 @@ def add_disc_sum_rew(trajectory, policy, network, gamma, lam, scaler):
     tds_pi = trajectory['rewards'] - values + P_pi[:, np.newaxis]#np.append(values[1:] * gamma, np.zeros((1, 1)), axis=0)#
     tds_a = trajectory['rewards'] - values + P_a[:, np.newaxis]#np.append(values[1:] * gamma, np.zeros((1, 1)), axis=0)#
 
-    advantages = relarive_vf(unscaled_obs, td_pi = tds_pi, td_act = tds_a, lam=lam)# advantage function
+    advantages = relarive_vf(unscaled_obs, td_pi = tds_pi, td_act = tds_a, lam=1.)# advantage function
     trajectory['advantages'] = np.asarray(advantages)
 
     # value function computing for futher neural network training
@@ -341,7 +344,7 @@ def main(network_id, num_policy_iterations, gamma, lam, kl_targ, batch_size, hid
     logger = Logger(logname=ray.get(network_id).network_name, now=now, time_start=time_start)
 
 
-    scaler = Scaler(obs_dim + 1, initial_state_procedure)
+    scaler = Scaler(obs_dim, initial_state_procedure)
     val_func = NNValueFunction(obs_dim, hid1_mult) # Value Neural Network initialization
     policy = Policy(obs_dim, act_dim, kl_targ, hid1_mult) # Policy Neural Network initialization
 
@@ -448,7 +451,7 @@ if __name__ == "__main__":
 
 
     start_time = datetime.datetime.now()
-    network = pn.ProcessingNetwork.from_name('criss_crossIM') # queuing network declaration
+    network = pn.ProcessingNetwork.from_name('12-classes') # queuing network declaration
     end_time = datetime.datetime.now()
     time_policy = end_time - start_time
     print('time of queuing network object creation:', int((time_policy.total_seconds() / 60) * 100) / 100., 'minutes')
@@ -470,18 +473,18 @@ if __name__ == "__main__":
     parser.add_argument('-b', '--batch_size', type=int, help='Number of episodes per training batch',
                         default = 25)
     parser.add_argument('-m', '--hid1_mult', type=int, help='Size of first hidden layer for value and policy NNs',
-                        default = 10)
+                        default = 1)
     parser.add_argument('-t', '--episode_duration', type=int, help='Number of time-steps per an episode',
-                        default = 100*10**4)
+                        default = 10**5)
     parser.add_argument('-y', '--cycles_num', type=int, help='Number of cycles',
-                        default = 50)
+                        default = 1)
     parser.add_argument('-c', '--clipping_parameter', type=float, help='Initial clipping parameter',
                         default = 0.2)
     parser.add_argument('-s', '--skipping_steps', type=int, help='Number of steps for which control is fixed',
                         default = 1)
     parser.add_argument('-i', '--initial_state_procedure', type=str,
                         help='procedure of generation intial states. Options: previous_iteration, LBFS, load, FBFS, cmu-policy, empty',
-                        default = 'empty')
+                        default = 'previous_iteration')
 
 
     args = parser.parse_args()

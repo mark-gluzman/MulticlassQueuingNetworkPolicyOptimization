@@ -165,24 +165,6 @@ class ProcessingNetwork:
         list = {}
         s_D = np.shape(self.D)
 
-        '''
-        #### compute the set of all posible actions ########################
-        set_act = []
-        actions = [s for s in itertools.product([0, 1], repeat=self.buffers_num)]
-        for a in actions:
-            i=0
-            while i != s_D[0]:
-                d = np.asarray(self.D[i])
-                if np.dot(d, np.asarray(a))!= 1:
-                    break
-                i += 1
-            if i == s_D[0]:
-                set_act.append(a)
-
-        self.actions = set_act # set of all possible actions
-        #######################
-        '''
-
         adjoint_buffers = {} # Python dictionary: key is a buffer, value is a list of buffers associated to the same station
         for i in range(0, s_D[0]):
             for j in range(0, s_D[1]):
@@ -339,26 +321,26 @@ class ProcessingNetwork:
 
         return prod_for_actions_list
 
-    def next_state_prob2(self, states_array):
+    def random_proportional_policy_distr(self, state):
+        """
+        Return probability distribution of actions for each station based on Random proportional policy
+        :param state: system state
+        :return: distribution of action according to random proportional policy
+        """
+        distr = []
+        for server in range(self.stations_num):
+            distr_one_server = np.zeros((1, np.sum(self.D[server])))
+            z_sum = np.sum(state[self.D[server]>0]) # sum of jobs that wait to be processed in 'server'
+            if z_sum > 0:
+                all_states = state / z_sum
+                distr_one_server = np.reshape(all_states[self.D[server]>0], (1, np.sum(self.D[server])))
+            else:
+                distr_one_server[0] = 1
+            distr.append(distr_one_server)
+        return distr
 
-        states = np.heaviside(states_array, 0)
 
-        P3 = np.array([[0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, -1, 0, 1]])
-        P1 = np.array([[0, 0, 1, 0, -1], [0, 0, 0, 1, 0], [0, 0, 0, 0, 1]])
 
-        prob3 = (np.heaviside(states @ P3, 0) + np.array([1, 1, 0, 0, 0])) @ \
-                np.diag(np.hstack([self.p_arriving[self.p_arriving > 0], self.p_compl[self.p_compl > 0]]))
-
-        a3 = 1 - np.sum(prob3, axis=1)
-        array3 = np.hstack([prob3, a3[:, np.newaxis]])
-
-        prob1 = (np.heaviside(states @ P1, 0) + np.array([1, 1, 0, 0, 0])) @ \
-                np.diag(np.hstack([self.p_arriving[self.p_arriving > 0], self.p_compl[self.p_compl > 0]]))
-
-        a1 = 1 - np.sum(prob1, axis=1)
-        array1 = np.hstack([prob1, a1[:, np.newaxis]])
-
-        return array3, array1
 
 
 

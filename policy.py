@@ -217,7 +217,11 @@ class Policy(object):
 
 
 
-    def run_episode(self, network, scaler, time_steps, cycles_num,  skipping_steps, initial_state):
+
+
+
+
+    def run_episode(self, network, scaler, time_steps, cycles_num,  skipping_steps, initial_state, rpp = True):
         """
         One episode simulation
         :param network: queuing network
@@ -247,23 +251,27 @@ class Policy(object):
 
             ##### modify initial state according to the method of intial states generation######
             if scaler.initial_states_procedure =='previous_iteration':
-                if sum(initial_state[:-1]) > 300 :
-                    initial_state = np.zeros(network.buffersNum+1, 'int8')
-                state = np.asarray(initial_state[:-1],'int32')
+                if sum(initial_state) > 300 :
+                    initial_state = np.zeros(network.buffersNum, 'int8')
+                state = np.asarray(initial_state,'int32')
             else:
                 state = np.asarray(initial_state, 'int32')
 
             ###############################################################
 
             t = 0
-            while t < 1 or np.sum(state)!=0: # run until visit to the empty state (regenerative state)
+            while t < time_steps:  #(t < 1 or np.sum(state)!=0) and: # run until visit to the empty state (regenerative state)
                 unscaled_obs[t] = state
                 state_input = (state - offset[:-1]) * scale[:-1]  # center and scale observations
 
                 ###### compute action distribution according to Policy Neural Network for state###
+
                 if tuple(state) not in policy_buffer:
-                    act_distr = self.sample([state_input])
-                    policy_buffer[tuple(state)] =act_distr
+                    if rpp:
+                        act_distr = network.random_proportional_policy_distr(state)
+                    else:
+                        act_distr = self.sample([state_input])
+                    policy_buffer[tuple(state)] = act_distr
                 distr = policy_buffer[tuple(state)][0][0] # distribution for each station
                 for ar_i in range(1, network.stations_num):
                     distr = [a*b for a in distr for b in policy_buffer[tuple(state)][ar_i][0]]
@@ -290,6 +298,9 @@ class Policy(object):
                 action_full = network.dict_absolute_to_binary_action[act_ind[0]]
                 action_for_server = network.dict_absolute_to_per_server_action[act_ind[0]]
 
+
+                '''
+
                 ######### check optimality of the sampled action ################
                 if state[0]<140 and state[1]<140 and state[2]<140:
                       if state[0]==0 or state[2]==0:
@@ -299,6 +310,7 @@ class Policy(object):
                       if all(action_full == action_optimal) or state[0]==0 or state[2]==0:
                           action_optimal_sum += 1
                 #######################
+                '''
 
 
 
