@@ -1,0 +1,20 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Control of multiclass queueing networks}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{The criss-cross network}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{General formulation}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Reinforcement learning approach for queuing network control}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Monotonic improvement guarantee for average cost objective}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Practical algorithm}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.3}{Choosing initial states for simulation}{section.3}% 8
+\BOOKMARK [1][-]{section.4}{Experimental results}{}% 9
+\BOOKMARK [2][-]{subsection.4.1}{Criss-cross network}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.2}{Extended six-class queuing network}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.3}{Extended re-entrant queuing network}{section.4}% 12
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 13
+\BOOKMARK [1][-]{section.6}{Appendix}{}% 14
+\BOOKMARK [2][-]{subsection.6.1}{Maximal Stability of Random Proportional Policy}{section.6}% 15
+\BOOKMARK [2][-]{subsection.6.2}{Proofs}{section.6}% 16
+\BOOKMARK [2][-]{subsection.6.3}{Neural Network structure}{section.6}% 17
+\BOOKMARK [2][-]{subsection.6.4}{Experiment Parameters}{section.6}% 18
+\BOOKMARK [2][-]{subsection.6.5}{Learning Curves}{section.6}% 19
+\BOOKMARK [2][-]{subsection.6.6}{Implementation Details}{section.6}% 20
