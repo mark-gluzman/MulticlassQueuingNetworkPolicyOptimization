@@ -1,0 +1,278 @@
+\begin{thebibliography}{10}
+
+\bibitem{Abadi2016}
+Mart{\'{i}}n Abadi, Paul Barham, Jianmin Chen, Zhifeng Chen, Andy Davis,
+  Jeffrey Dean, Matthieu Devin, Sanjay Ghemawat, Geoffrey Irving, Michael
+  Isard, Manjunath Kudlur, Josh Levenberg, Rajat Monga, Sherry Moore, Derek~G.
+  Murray, Benoit Steiner, Paul Tucker, Vijay Vasudevan, Pete Warden, Martin
+  Wicke, Yuan Yu, and Xiaoqiang Zheng.
+\newblock {TensorFlow: A System for Large-Scale Machine Learning}.
+\newblock In {\em 12th USENIX Symposium on Operating Systems Design and
+  Implementation (OSDI 16)}, pages 265----283. USENIX Association, 2016.
+
+\bibitem{Abbasi_Yadkori2014a}
+Yasin Abbasi-Yadkori, Peter Bartlett, and Alan Malek.
+\newblock {Linear programming for large-scale Markov decision problems}.
+\newblock In {\em Proceeding ICML'14 Proceedings of the 31st International
+  Conference on International Conference on Machine Learning - Volume 32},
+  pages 496--504, 2014.
+
+\bibitem{Achiam2017}
+Joshua Achiam, David Held, Aviv Tamar, and Pieter Abbeel.
+\newblock {Constrained Policy Optimization}.
+\newblock may 2017.
+
+\bibitem{Bauerle2001a}
+Nicole Bauerle.
+\newblock {Asymptotic optimality of tracking policies in stochastic networks}.
+\newblock {\em The Annals of Applied Probability}, 10(4):1065--1083, nov 2001.
+
+\bibitem{Baxter2001}
+Jonathan Baxter and Peter~L Bartlett.
+\newblock {Infinite-Horizon Policy-Gradient Estimation}.
+\newblock {\em Journal of Artificial Intelligence Research}, 15:319--350, 2001.
+
+\bibitem{Bellemare2013}
+Marc~G. Bellemare, Yavar Naddaf, Joel Veness, and Michael Bowling.
+\newblock {The arcade learning environment: an evaluation platform for general
+  agents}.
+\newblock {\em Journal of Artificial Intelligence Research}, 47(1):253--279,
+  2013.
+
+\bibitem{Bertsimas2017}
+Dimitris Bertsimas, J.~Daniel Griffith, Vishal Gupta, Mykel~J. Kochenderfer,
+  and Velibor~V. Mi{\v{s}}i{\'{c}}.
+\newblock {A comparison of Monte Carlo tree search and rolling horizon
+  optimization for large-scale dynamic resource allocation problems}.
+\newblock {\em European Journal of Operational Research}, 263(2):664--678, dec
+  2017.
+
+\bibitem{Bertsimas2015}
+Dimitris Bertsimas, Ebrahim Nasrabadi, and Ioannis~Ch. Paschalidis.
+\newblock {Robust Fluid Processing Networks}.
+\newblock {\em IEEE Transactions on Automatic Control}, 60(3):715--728, mar
+  2015.
+
+\bibitem{CongLuong}
+Nguyen {Cong Luong}, Dinh {Thai Hoang}, Shimin Gong, Dusit Niyato, Ping Wang,
+  Ying-Chang Liang, and Dong {In Kim}.
+\newblock {Applications of Deep Reinforcement Learning in Communications and
+  Networking: A Survey}.
+\newblock 2018.
+
+\bibitem{Dai1995}
+J.~G. Dai.
+\newblock {On Positive Harris Recurrence of Multiclass Queueing Networks: A
+  Unified Approach Via Fluid Limit Models}.
+\newblock {\em The Annals of Applied Probability}, 5(1):49--77, feb 1995.
+
+\bibitem{DeFarias2003a}
+D.~P. de~Farias and B.~{Van Roy}.
+\newblock {The Linear Programming Approach to Approximate Dynamic Programming}.
+\newblock {\em Operations Research}, 51(6):850--865, 2003.
+
+\bibitem{Duan2016}
+Yan Duan, Xi~Chen, Rein Houthooft, John Schulman, and Pieter Abbeel.
+\newblock {Benchmarking deep reinforcement learning for continuous control}.
+\newblock In {\em Proceedings of the 33rd International Conference on
+  International Conference on Machine Learning}, pages 1329--1338. JMLR.org,
+  2016.
+
+\bibitem{DeepMind2016a}
+J.~Gao and R.~Evans.
+\newblock {DeepMind AI Reduces Google Data Centre Cooling Bill by 40{\%}},
+  2016.
+
+\bibitem{Harrison1988}
+J.~Michael Harrison.
+\newblock {Brownian Models of Queueing Networks with Heterogeneous Customer
+  Populations}.
+\newblock pages 147--186. Springer, New York, NY, 1988.
+
+\bibitem{Harrison1989}
+J.~Michael Harrison and Lawrence~M. Wein.
+\newblock {Scheduling networks of queues: Heavy traffic analysis of a simple
+  open network}.
+\newblock {\em Queueing Systems}, 5(4):265--279, dec 1989.
+
+\bibitem{Harrison1990}
+J.~Michael Harrison and Lawrence~M. Wein.
+\newblock {Scheduling Networks of Queues: Heavy Traffic Analysis of a
+  Two-Station Closed Network}.
+\newblock {\em Operations Research}, 38(6):1052--1064, 1990.
+
+\bibitem{Kakade2002}
+Sham Kakade and John Langford.
+\newblock {Approximately Optimal Approximate Reinforcement Learning}.
+\newblock In {\em Proceedings of the Nineteenth International Conference on
+  Machine Learning}, pages 267--274. Morgan Kaufmann Publishers, 2002.
+
+\bibitem{Kartashov1985}
+N.~Kartashov.
+\newblock {Criteria for uniform ergodicity and strong stability of Markov
+  chains with a common phase space}.
+\newblock {\em Theory Probab. Appl.}, 30:71--89, 1985.
+
+\bibitem{Kingma2017}
+Diederik~P. Kingma and Jimmy Ba.
+\newblock {Adam: A Method for Stochastic Optimization}.
+\newblock 2017.
+
+\bibitem{Komorowski2018}
+Matthieu Komorowski, Leo~A. Celi, Omar Badawi, Anthony~C. Gordon, and A.~Aldo
+  Faisal.
+\newblock {The Artificial Intelligence Clinician learns optimal treatment
+  strategies for sepsis in intensive care}.
+\newblock {\em Nature Medicine}, 24(11):1716--1720, nov 2018.
+
+\bibitem{Laws1990}
+C.~N. Laws and G.~M. Louth.
+\newblock {Dynamic Scheduling of a Four-Station Queueing Network}.
+\newblock {\em Probability in the Engineering and Informational Sciences},
+  4(1):131--156, jan 1990.
+
+\bibitem{Lippman1975}
+Steven~A. Lippman.
+\newblock {Applying a New Device in the Optimization of Exponential Queuing
+  Systems}.
+\newblock {\em Operations Research}, 23(4):687--710, aug 1975.
+
+\bibitem{Liu2012}
+Yuanyuan Liu.
+\newblock {Perturbation Bounds for the Stationary Distributions of Markov
+  Chains}.
+\newblock {\em SIAM Journal on Matrix Analysis and Applications},
+  33(4):1057--1074, jan 2012.
+
+\bibitem{Maglaras2000}
+Constantinos Maglaras.
+\newblock {Discrete-review policies for scheduling stochastic networks:
+  trajectory tracking and fluid-scale asymptotic optimality}.
+\newblock {\em The Annals of Applied Probability}, 10(3):897--929, aug 2000.
+
+\bibitem{Meyn1997}
+Sean Meyn.
+\newblock {Stability and Optimization of Queueing Networks and Their Fluid
+  Models}.
+\newblock {\em Lectures in applied mathematics-American Mathematical Society},
+  33:175--200, 1997.
+
+\bibitem{Mnih2016}
+Volodymyr Mnih, Adri{\`{a}}~Puigdom{\`{e}}nech Badia, Mehdi Mirza, Alex Graves,
+  Timothy~P. Lillicrap, Tim Harley, David Silver, and Koray Kavukcuoglu.
+\newblock {Asynchronous Methods for Deep Reinforcement Learning}.
+\newblock feb 2016.
+
+\bibitem{Mnih2015}
+Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei~A. Rusu, Joel Veness,
+  Marc~G. Bellemare, Alex Graves, Martin Riedmiller, Andreas~K. Fidjeland,
+  Georg Ostrovski, Stig Petersen, Charles Beattie, Amir Sadik, Ioannis
+  Antonoglou, Helen King, Dharshan Kumaran, Daan Wierstra, Shane Legg, and
+  Demis Hassabis.
+\newblock {Human-level control through deep reinforcement learning}.
+\newblock {\em Nature}, 518(7540):529--533, feb 2015.
+
+\bibitem{Moritz2018}
+Philipp Moritz, Robert Nishihara, Stephanie Wang, Alexey Tumanov, Richard Liaw,
+  Eric Liang, Melih Elibol, Zongheng Yang, William Paul, Michael~I. Jordan, and
+  Ion Stoica.
+\newblock {Ray: A Distributed Framework for Emerging AI Applications}.
+\newblock dec 2018.
+
+\bibitem{Nichol2018}
+Alex Nichol, Vicki Pfau, Christopher Hesse, Oleg Klimov, and John Schulman.
+\newblock {Gotta Learn Fast: A New Benchmark for Generalization in RL}.
+\newblock apr 2018.
+
+\bibitem{OpenAI2019}
+OpenAI.
+\newblock {OpenAI Five}, 2019.
+
+\bibitem{Paschalidis2004}
+I.C. Paschalidis, C.~Su, and M.C. Caramanis.
+\newblock {Target-Pursuing Scheduling and Routing Policies for Multiclass
+  Queueing Networks}.
+\newblock {\em IEEE Transactions on Automatic Control}, 49(10):1709--1722, oct
+  2004.
+
+\bibitem{Ramirez-Hernandez}
+J.A. Ramirez-Hernandez and E.~Fernandez.
+\newblock {A Case Study in Scheduling Reentrant Manufacturing Lines: Optimal
+  and Simulation-Based Approaches}.
+\newblock In {\em Proceedings of the 44th IEEE Conference on Decision and
+  Control}, pages 2158--2163. IEEE, 2005.
+
+\bibitem{Ramirez-Hernandez2007a}
+Jose~A. Ramirez-Hernandez and Emmanuel Fernandez.
+\newblock {An Approximate Dynamic Programming Approach for Job Releasing and
+  Sequencing in a Reentrant Manufacturing Line}.
+\newblock In {\em 2007 IEEE International Symposium on Approximate Dynamic
+  Programming and Reinforcement Learning}, pages 201--208. IEEE, apr 2007.
+
+\bibitem{Ramirez-Hernandez2007c}
+Jose~A. Ramirez-Hernandez and Emmanuel Fernandez.
+\newblock {Control of a re-entrant line manufacturing model with a
+  reinforcement learning approach}.
+\newblock In {\em Sixth International Conference on Machine Learning and
+  Applications (ICMLA 2007)}, pages 330--335. IEEE, dec 2007.
+
+\bibitem{Schulman2015}
+John Schulman, Sergey Levine, Philipp Moritz, Michael~I. Jordan, and Pieter
+  Abbeel.
+\newblock {Trust Region Policy Optimization}.
+\newblock In {\em Proceeding ICML'15}, pages 1889--1897, feb 2015.
+
+\bibitem{Schulman2016}
+John Schulman, Philipp Moritz, Sergey Levine, Michael~I. Jordan, and Pieter
+  Abbeel.
+\newblock {High-Dimensional Continuous Control Using Generalized Advantage
+  Estimation}.
+\newblock In {\em ICLR}, 2016.
+
+\bibitem{Schulman2017}
+John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov.
+\newblock {Proximal Policy Optimization Algorithms}.
+\newblock jul 2017.
+
+\bibitem{Silver2017}
+David Silver, Julian Schrittwieser, Karen Simonyan, Ioannis Antonoglou, Aja
+  Huang, Arthur Guez, Thomas Hubert, Lucas Baker, Matthew Lai, Adrian Bolton,
+  Yutian Chen, Timothy Lillicrap, Fan Hui, Laurent Sifre, George van~den
+  Driessche, Thore Graepel, and Demis Hassabis.
+\newblock {Mastering the game of Go without human knowledge}.
+\newblock {\em Nature}, 550(7676):354--359, oct 2017.
+
+\bibitem{Sutton2018}
+Richard~S. Sutton and Andrew~G. Barto.
+\newblock {\em {Reinforcement learning : an introduction}}.
+\newblock MIT press, 2nd edition, 2018.
+
+\bibitem{Thomas}
+Philip~S Thomas.
+\newblock {Bias in Natural Actor-Critic Algorithms}.
+\newblock In {\em Proceedings of the 31 st International Conference on Machine
+  Learning}, 2014.
+
+\bibitem{Todorov2012}
+Emanuel Todorov, Tom Erez, and Yuval Tassa.
+\newblock {MuJoCo: A physics engine for model-based control}.
+\newblock In {\em 2012 IEEE/RSJ International Conference on Intelligent Robots
+  and Systems}, pages 5026--5033. IEEE, oct 2012.
+
+\bibitem{Veatch2015}
+Michael~H. Veatch.
+\newblock {Approximate linear programming for networks: Average cost bounds}.
+\newblock {\em Computers {\&} Operations Research}, 63:32--45, nov 2015.
+
+\bibitem{Wein1990}
+Lawrence~M. Wein.
+\newblock {Optimal Control of a Two-Station Brownian Network}.
+\newblock {\em Mathematics of Operations Research}, 15(2):215--242, may 1990.
+
+\bibitem{Williams1998}
+R.J. Williams.
+\newblock {Diffusion approximations for open multiclass queueing networks:
+  sufficient conditions involving state space collapse}.
+\newblock {\em Queueing Systems}, 30(1/2):27--88, 1998.
+
+\end{thebibliography}
