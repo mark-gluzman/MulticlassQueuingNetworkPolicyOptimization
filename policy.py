@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import ray.experimental
 import datetime
-
+import sklearn
 
 class Policy(object):
     """ Policy Neural Network """
@@ -20,7 +20,7 @@ class Policy(object):
         self.beta = 3  # dynamically adjusted D_KL loss multiplier
         self.kl_targ = kl_targ
         self.hid1_mult = hid1_mult
-        self.epochs = 5
+        self.epochs = 3
         self.lr = None
         self.lr_multiplier = 1.0  # dynamically adjust lr when D_KL out of control
         self.obs_dim = obs_dim
@@ -41,6 +41,7 @@ class Policy(object):
             self._logprob()
             self._kl_entropy()
             self._loss_train_op()
+            self._loss_initial_op()
             self.init = tf.global_variables_initializer()
             self.sess = tf.Session(graph=self.g)
             self.variables = ray.experimental.TensorFlowVariables(self.loss, self.sess)
@@ -217,54 +218,64 @@ class Policy(object):
 
 
 
-
-
-
-
-    def run_episode(self, network, scaler, time_steps, cycles_num,  skipping_steps, initial_state, rpp = True):
+    def run_episode(self, network, scaler, time_steps, cycles_num, skipping_steps, initial_state, rpp = False):
         """
         One episode simulation
         :param network: queuing network
         :param scaler: normalization values
         :param time_steps: max number of time steps
-        :param cycles_num: number of regenerative cycles to simulate
         :param skipping_steps: number of steps for which control is fixed
         :param initial_state: initial state for the episode
         :return: collected data
         """
 
-        trajectories = [] # collect regenerative cycles
+
         policy_buffer = {} # save action disctribution of visited states
 
         total_steps = 0 # count steps
         action_optimal_sum = 0 # count actions that coinside with the optimal policy
         total_zero_steps = 0 # count states for which all actions are optimal
 
+
         observes = np.zeros((time_steps, network.buffers_num))
         actions = np.zeros((time_steps, network.stations_num), 'int8')
+        actions_glob = np.zeros((time_steps,  ), 'int8')
         rewards = np.zeros((time_steps, 1))
         unscaled_obs = np.zeros((time_steps, network.buffers_num), 'int32')
+        unscaled_last = np.zeros((time_steps, network.buffers_num), 'int32')
+        array_actions = []
+        for i in range(network.stations_num):
+            array_actions.append(np.zeros((time_steps, self.act_dim[i])))
 
 
+        t = 0
+        av_cycle_length = 0
         for cyc in range(cycles_num):
             scale, offset = scaler.get()
 
             ##### modify initial state according to the method of intial states generation######
             if scaler.initial_states_procedure =='previous_iteration':
-                if sum(initial_state) > 300 :
-                    initial_state = np.zeros(network.buffersNum, 'int8')
-                state = np.asarray(initial_state,'int32')
+                if sum(initial_state[:-1]) > 300 :
+                    initial_state = np.zeros(network.buffersNum+1, 'int8')
+                state = np.asarray(initial_state[:-1],'int32')
             else:
                 state = np.asarray(initial_state, 'int32')
 
             ###############################################################
+            cycle_length = 0
 
-            t = 0
-            while t < time_steps:  #(t < 1 or np.sum(state)!=0) and: # run until visit to the empty state (regenerative state)
+            init = True
+            while init or np.sum(state)!=0: # run until visit to the empty state (regenerative state)
+                init = False
+                cycle_length += 1
+
+
+
                 unscaled_obs[t] = state
                 state_input = (state - offset[:-1]) * scale[:-1]  # center and scale observations
 
                 ###### compute action distribution according to Policy Neural Network for state###
+
 
                 if tuple(state) not in policy_buffer:
                     if rpp:
@@ -273,68 +284,184 @@ class Policy(object):
                         act_distr = self.sample([state_input])
                     policy_buffer[tuple(state)] = act_distr
                 distr = policy_buffer[tuple(state)][0][0] # distribution for each station
+
+                array_actions[0][t] = distr
                 for ar_i in range(1, network.stations_num):
-                    distr = [a*b for a in distr for b in policy_buffer[tuple(state)][ar_i][0]]
+                    distr = [a * b for a in distr for b in policy_buffer[tuple(state)][ar_i][0]]
+                    array_actions[ar_i][t] = policy_buffer[tuple(state)][ar_i][0]
                 distr = distr / sum(distr)
                 ############################################
 
-                """
-                act_ind - all possible actions are numerated GLOBALLY as 0, 1, 2, ...
-                action_full - buffers that have priority are equal to 1, otherwise 0
-                action_for_server - all possible actions FOR EACH STATIONS are numerated as 0, 1, 2, ...
-                
-                For the simple reentrant line. 
-                If priority is given to the first class:
-                    act_ind = [0]
-                    action_full = [1, 1, 0]
-                    action_for_server = [0, 0]
-                    
-                If priority is given to the third class:
-                    act_ind = [1]
-                    action_full = [0, 1, 1]
-                    action_for_server = [1, 0]
-                """
                 act_ind = np.random.choice(len(distr), 1, p=distr) # sample action according to distribution 'distr'
                 action_full = network.dict_absolute_to_binary_action[act_ind[0]]
                 action_for_server = network.dict_absolute_to_per_server_action[act_ind[0]]
 
-
-                '''
-
                 ######### check optimality of the sampled action ################
-                if state[0]<140 and state[1]<140 and state[2]<140:
-                      if state[0]==0 or state[2]==0:
-                          total_zero_steps += 1
+                if len(state)==3 and state[0]<140 and state[1]<140 and state[2]<140:
+                    if state[0]==0 or state[2]==0:
+                        total_zero_steps += 1
 
-                      action_optimal = network.comparison_policy[tuple(state)]
-                      if all(action_full == action_optimal) or state[0]==0 or state[2]==0:
-                          action_optimal_sum += 1
+                    action_optimal = network.comparison_policy[tuple(state)]
+                    if all(action_full == action_optimal) or state[0]==0 or state[2]==0:
+                        action_optimal_sum += 1
+
+                else:
+                    action_optimal = network.comparison_policy[tuple(state>0)]
+                    if all(action_full == action_optimal):
+                        action_optimal_sum += 1
                 #######################
-                '''
 
 
 
-                rewards[t] = np.asarray(-np.sum(state))
+                rewards[t] = -np.sum(state)
+
+                unscaled_last[t] = state
                 state = network.next_state(state, action_full)
                 actions[t] = action_for_server
                 observes[t] = state_input
+                actions_glob[t] = act_ind[0]
 
 
-                for i in range(skipping_steps-1):
-                     rewards[t] += -np.sum(state)
-                     state = network.next_state(state, action_full) # move to the next state
                 t+=1
+            av_cycle_length = 1/(cyc+1)*cycle_length + cyc/(cyc+1)*av_cycle_length
 
-            total_steps += len(actions[:t])
-            # record simulation
-            trajectory = {#'observes': observes,
+
+
+        total_steps += len(actions[:t])
+        # record simulation
+
+        trajectory = {#'observes': observes,
                           'actions': actions[:t],
+                          'actions_glob': actions_glob[:t],
                           'rewards': rewards[:t] / skipping_steps,
-                          'unscaled_obs': unscaled_obs[:t]
+                          'unscaled_obs': unscaled_obs[:t],
+                          'unscaled_last': unscaled_last[:t]
                       }
 
-            trajectories.append(trajectory)
-        return trajectories, total_steps, action_optimal_sum, total_zero_steps
+
+        print('Network:', network.network_name + '.', 'time of an episode:',
+               'Average cost:', -np.mean(trajectory['rewards']),
+                'Average cycle lenght:', av_cycle_length)
+
+        return trajectory, total_steps, action_optimal_sum, total_zero_steps, array_actions
+
+
+
+
+
+    def policy_performance_cycles(self, network, scaler, initial_state, id, batch_num = 1000000, stochastic=True):
+
+
+        length_batch = np.zeros(batch_num)
+        cost_batch = np.zeros(batch_num)
+        policy_buffer = {}
+
+
+
+
+        scale, offset = scaler.get()
+
+
+        for batch in range(batch_num):
+
+            if batch % 10000 ==1 and id==1:
+                print(int(batch/ batch_num*100), '% is done')
+
+            if scaler.initial_states_procedure =='previous_iteration':
+                if sum(initial_state[:-1]) > 300 :
+                    initial_state = np.zeros(network.buffers_num+1, 'int8')
+
+
+                state = np.asarray(initial_state[:-1],'int32')
+            else:
+                state = np.asarray(initial_state, 'int32')
+
+
+
+
+            k = 0
+            while np.sum(state)!=0 or k==0:
+                k += 1
+
+                state_input = (state - offset[:-1]) * scale[:-1]  # center and scale observations
+
+
+                if tuple(state) not in policy_buffer:
+
+                    act_distr = self.sample([state_input], stochastic)
+                    policy_buffer[tuple(state)] = act_distr
+                distr = policy_buffer[tuple(state)][0][0]  # distribution for each station
+
+
+                for ar_i in range(1, network.stations_num):
+                    distr = [a * b for a in distr for b in policy_buffer[tuple(state)][ar_i][0]]
+
+                distr = distr / sum(distr)
+                act_ind = np.random.choice(len(distr), 1, p=distr)
+
+                action_full = network.dict_absolute_to_binary_action[act_ind[0]]
+
+                #average_performance = 1/(t+1) * np.sum(state) + t / (t+1) * average_performance
+                length_batch[batch] +=1
+                cost_batch[batch] +=np.sum(state)
+
+
+
+                state = network.next_state(state, action_full)
+
+
+
+
+        average_performance = np.mean(cost_batch)/ np.mean(length_batch)
+
+        s11 = np.var(length_batch)
+        s22 = np.var(cost_batch)
+        s12 = 1/ (batch_num-1) * np.sum((length_batch - np.mean(length_batch))*(cost_batch - np.mean(cost_batch)))
+
+        s2 = np.mean(cost_batch)**2*s11/(np.mean(length_batch)**4) + s22/(np.mean(length_batch)**2) - 2*np.mean(cost_batch)*s12/(np.mean(length_batch)**3)
+        ci =  1.96*np.sqrt(s2 / batch_num)
+
+
+        #optimal_ratio = action_optimal_sum / total_steps
+
+        print(id, ' average_' + str(average_performance)+'+-' +str(ci))
+        return average_performance, id, ci
+
+
+
+
+
+    def _loss_initial_op(self):
+        optimizer = tf.train.AdamOptimizer(self.lr_ph)
+        self.train_init = optimizer.minimize(self.kl)
+
+    def initilize_rpp(self, observes, action_distr, batch_size=256):
+        """
+        Policy Neural Network update
+        :param observes: states
+        :param actions: actions
+        :param advantages: estimation of antantage function at observed states
+        :param logger: statistics accumulator
+        """
+
+        num_batches = max(observes.shape[0] // batch_size, 1)
+        batch_size = observes.shape[0] // num_batches
+
+        for e in range(20):
+            x_train, *y_train = sklearn.utils.shuffle(observes, *action_distr)
+            for j in range(num_batches):
+                start = j * batch_size
+                end = (j + 1) * batch_size
+                feed_dict = {self.obs_ph: x_train[start:end, :],
+                             self.beta_ph: self.beta,
+                             self.lr_ph: self.lr * self.lr_multiplier,
+                             self.act_ph: 0 * observes[:, 0:2],
+                             self.advantages_ph: 0 * observes[:, 0]}
+                for i in range(len(self.act_dim)):
+                    feed_dict[self.old_act_prob_ph[i]] = y_train[i][start:end, :]
+
+                self.sess.run(self.train_init, feed_dict)
+
 
 
     def close_sess(self):

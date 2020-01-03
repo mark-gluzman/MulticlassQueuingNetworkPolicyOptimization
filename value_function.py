@@ -1,11 +1,13 @@
 """
 State-Value Function
+
 Written by Patrick Coady (pat-coady.github.io)
 """
 
 import tensorflow as tf
 import numpy as np
 from sklearn.utils import shuffle
+import keras
 
 class NNValueFunction(object):
     """ NN-based state-value function """
@@ -19,7 +21,7 @@ class NNValueFunction(object):
         self.replay_buffer_y = None
         self.obs_dim = obs_dim
         self.hid1_mult = hid1_mult
-        self.epochs = 5
+        self.epochs = 10
         self.lr = None  # learning rate set in _build_graph()
         self._build_graph()
         self.sess = tf.Session(graph=self.g)
@@ -68,7 +70,7 @@ class NNValueFunction(object):
             y: target
             logger: logger to save training loss and % explained variance
         """
-        num_batches = max(x.shape[0] // 256 , 1)
+        num_batches = max(x.shape[0] // 256, 1)
         batch_size = x.shape[0] // num_batches
 
 
@@ -77,11 +79,10 @@ class NNValueFunction(object):
         else:
             x_train = np.concatenate([x, self.replay_buffer_x])
             y_train = np.concatenate([y, self.replay_buffer_y])
-        #!!!!!!!!!!!!!!!!!!
+            #!!!!!!!!!!!!!!!!!!
         self.replay_buffer_x = x
         self.replay_buffer_y = y
         #!!!!!!!!!!!!!!!!!!!!!!
-        loss = 0
         for e in range(self.epochs):
             x_train, y_train = shuffle(x_train, y_train)
             for j in range(num_batches):
@@ -94,6 +95,10 @@ class NNValueFunction(object):
             loss = np.mean(np.square(y_hat - y))
             print('epochs = ',e)
             print('total error: ',loss)
+
+
+
+
 
         logger.log({'ValFuncLoss': loss})
 

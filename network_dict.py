@@ -1,6 +1,3 @@
-"""
-The list of multiclass queuing networks
-"""
 network_dictionary = {
 
     'reentrant': {
@@ -30,7 +27,7 @@ network_dictionary = {
         'D': [[1, 0, 1], [0, 1, 0]],
         'alpha': [0.6, 0.0, 0.6],
         'mu': [2.0, 1.0, 2.0],
-        'name': 'criss_cross'
+        'name': 'criss_crossBM'
     },
     'criss_crossIM': {
         'A': [[-1, 1, 0], [0, -1, 0], [0, 0, -1]],
@@ -38,6 +35,22 @@ network_dictionary = {
         'alpha': [0.6, 0.0, 0.6],
         'mu': [2.0, 1.5, 2.0],
         'name': 'criss_crossIM'
+    },
+
+    'criss_crossBL': {
+        'A': [[-1, 1, 0], [0, -1, 0], [0, 0, -1]],
+        'D': [[1, 0, 1], [0, 1, 0]],
+        'alpha': [0.3, 0.0, 0.3],
+        'mu': [2.0, 1., 2.0],
+        'name': 'criss_crossBL'
+    },
+
+    'criss_crossIL': {
+        'A': [[-1, 1, 0], [0, -1, 0], [0, 0, -1]],
+        'D': [[1, 0, 1], [0, 1, 0]],
+        'alpha': [0.3, 0.0, 0.3],
+        'mu': [2.0, 1.5, 2.0],
+        'name': 'criss_crossIL'
     },
 
     '6-classes_re': {

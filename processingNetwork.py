@@ -28,6 +28,7 @@ class ProcessingNetwork:
         self.action_size_per_buffer = [sum(D[i]) for i in range(len(D))]  # number of possible actions for each station
         self.stations_num = np.shape(D)[0]  # number of stations
         self.buffers_num = len(mu)  # number of buffers
+
         self.activities_num = len(self.cumsum_rates)  # number of activities
         self.network_name = name
 
@@ -62,19 +63,14 @@ class ProcessingNetwork:
                                         values are 'action_full' representation
         dict_absolute_to_per_server_action: Python dictionary where keys are 'act_ind' action representation,
                                             values are 'action_for_server' representation
-
-
-
         act_ind - all possible actions are numerated GLOBALLY as 0, 1, 2, ...
         action_full - buffers that have priority are equal to 1, otherwise 0
         action_for_server - all possible actions FOR EACH STATIONS are numerated as 0, 1, 2, ...
-
         For the simple reentrant line.
         If priority is given to the first class:
             act_ind = [0]
             action_full = [1, 1, 0]
             action_for_server = [0, 0]
-
         If priority is given to the third class:
             act_ind = [1]
             action_full = [0, 1, 1]
@@ -110,14 +106,10 @@ class ProcessingNetwork:
         change action representation
         :param act_ind: all possible actions are numerated GLOBALLY as 0, 1, 2, ...
         :return: buffers that have priority are equal to 1, otherwise 0
-
-
         For the simple reentrant line.
         If priority is given to the first class:
         act_ind = [0]
         action_full = [1, 1, 0]
-
-
         If priority is given to the third class:
         act_ind = [1]
         action_full = [0, 1, 1]
@@ -165,6 +157,23 @@ class ProcessingNetwork:
         list = {}
         s_D = np.shape(self.D)
 
+        '''
+        #### compute the set of all posible actions ########################
+        set_act = []
+        actions = [s for s in itertools.product([0, 1], repeat=self.buffers_num)]
+        for a in actions:
+            i=0
+            while i != s_D[0]:
+                d = np.asarray(self.D[i])
+                if np.dot(d, np.asarray(a))!= 1:
+                    break
+                i += 1
+            if i == s_D[0]:
+                set_act.append(a)
+        self.actions = set_act # set of all possible actions
+        #######################
+        '''
+
         adjoint_buffers = {} # Python dictionary: key is a buffer, value is a list of buffers associated to the same station
         for i in range(0, s_D[0]):
             for j in range(0, s_D[1]):
@@ -205,36 +214,36 @@ class ProcessingNetwork:
 
 
         if policy == 'criss_cross':
-            p = np.load('policy, criss-cross, n=140, average, 15.1915.npy')
+            p = np.load('policy, criss-cross, n=140, average, 15.1915.npy', allow_pickle=True)
 
             list = p.item()
         elif policy == 'criss_crossIH':
-            p = np.load('policy, criss-crossIH, skipping=1, n = 150, beta = 1, ac = 9.964.npy')
+            p = np.load('policy, criss-crossIH, skipping=1, n = 150, beta = 1, ac = 9.964.npy', allow_pickle=True)
 
             list = p.item()
         elif policy == 'criss_crossBM':
-            p = np.load('policy, criss-crossBM, skipping=1, n = 150, beta = 1, ac = 2.82.npy')
+            p = np.load('policy, criss-crossBM, skipping=1, n = 150, beta = 1, ac = 2.82.npy', allow_pickle=True)
 
             list = p.item()
         elif policy == 'criss_crossIM':
-            p = np.load('policy, criss-crossIM, skipping=1, n = 150, beta = 1, ac = 2.079.npy')
+            p = np.load('policy, criss-crossIM, skipping=1, n = 150, beta = 1, ac = 2.079.npy', allow_pickle=True)
 
             list = p.item()
         elif policy == 'criss_crossBL':
-            p = np.load('policy, criss-crossBL, skipping=1, n = 150, beta = 1, ac = 0.841.npy')
+            p = np.load('policy, criss-crossBL, skipping=1, n = 150, beta = 1, ac = 0.841.npy', allow_pickle=True)
 
             list = p.item()
         elif policy == 'criss_crossBL':
-            p = np.load('criss-crossBL, skipping=1, n = 150, beta = 1, ac = 0.842.npy')
+            p = np.load('criss-crossBL, skipping=1, n = 150, beta = 1, ac = 0.842.npy', allow_pickle=True)
 
             list = p.item()
         elif policy == 'criss_crossIL':
-            p = np.load('policy, criss-crossIL, skipping=1, n = 150, beta = 1, ac = 0.67.npy')
+            p = np.load('policy, criss-crossIL, skipping=1, n = 150, beta = 1, ac = 0.67.npy', allow_pickle=True)
 
             list = p.item()
 
         elif policy == 'reentrant':
-            p = np.load('policy, RV_reentrance, n=140, disc = 0.9998, 25.58434.npy')
+            p = np.load('policy, RV_reentrance, n=140, disc = 0.9998, 25.58434.npy', allow_pickle=True)
 
             list = p.item()
 
@@ -321,6 +330,7 @@ class ProcessingNetwork:
 
         return prod_for_actions_list
 
+
     def random_proportional_policy_distr(self, state):
         """
         Return probability distribution of actions for each station based on Random proportional policy
@@ -335,12 +345,7 @@ class ProcessingNetwork:
                 all_states = state / z_sum
                 distr_one_server = np.reshape(all_states[self.D[server]>0], (1, np.sum(self.D[server])))
             else:
-                distr_one_server[0] = 1
+                distr_one_server[0]  = 1./sum(self.D[server])
             distr.append(distr_one_server)
         return distr
-
-
-
-
-
 
