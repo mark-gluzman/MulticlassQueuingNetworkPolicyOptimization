@@ -33,13 +33,10 @@ def diag_dot(A, B):
 
 def run_weights(network_id, weights_set, policy, scaler, cycles):
 
-
     if scaler.initial_states_procedure == 'previous_iteration':
         initial_state_0 = np.zeros(policy.get_obs_dim() + 1)
     else:
         initial_state_0 = np.zeros(policy.get_obs_dim())
-
-
 
     episodes = len(weights_set)
 
@@ -205,26 +202,26 @@ def add_disc_sum_rew(trajectories, policy, network, gamma, lam, scaler, iteratio
 
 
             ###### compute expectation of the value function of the next state ###########
-            # probab_of_actions = policy.sample(observes) # probability of choosing actions according to a NN policy
-            #
-            # distr = np.array(probab_of_actions[0].T)
-            # for ar_i in range(1, network.stations_num):
-            #     distr = [a * b for a in distr for b in np.array(probab_of_actions[ar_i].T)]
-            #
-            # distr = np.array(distr).T
-            # distr = distr / np.sum(distr, axis=1)[:, np.newaxis]  # normalization
-            #
-            # action_array = network.next_state_prob(unscaled_obs) # transition probabilities for fixed actions
-            #
-            #
-            #
-            # # expectation of the value function for fixed actions
-            # value_for_each_action_list = []
-            # for act in action_array:
-            #     value_for_each_action_list.append(diag_dot(act, trajectory['values_set'].T))
-            # value_for_each_action = np.vstack(value_for_each_action_list)
-            #
-            # P_pi = diag_dot(distr, value_for_each_action)  # expectation of the value function
+            probab_of_actions = policy.sample(observes) # probability of choosing actions according to a NN policy
+
+            distr = np.array(probab_of_actions[0].T)
+            for ar_i in range(1, network.stations_num):
+                distr = [a * b for a in distr for b in np.array(probab_of_actions[ar_i].T)]
+
+            distr = np.array(distr).T
+            distr = distr / np.sum(distr, axis=1)[:, np.newaxis]  # normalization
+
+            action_array = network.next_state_prob(unscaled_obs) # transition probabilities for fixed actions
+
+
+
+            # expectation of the value function for fixed actions
+            value_for_each_action_list = []
+            for act in action_array:
+                value_for_each_action_list.append(diag_dot(act, trajectory['values_set'].T))
+            value_for_each_action = np.vstack(value_for_each_action_list)
+
+            P_pi = diag_dot(distr, value_for_each_action)  # expectation of the value function
             ##############################################################################################################
 
             # # expectation of the value function w.r.t the actual actions in data
@@ -234,7 +231,7 @@ def add_disc_sum_rew(trajectories, policy, network, gamma, lam, scaler, iteratio
 
 
             # td-error computing
-            tds_pi = trajectory['rewards'] - values #+ gamma*P_pi[:, np.newaxis]#gamma * np.append(values[1:], values[-1]), axis=0)#
+            tds_pi = trajectory['rewards'] - values + gamma*P_pi[:, np.newaxis]#gamma * np.append(values[1:], values[-1]), axis=0)#
             # tds_a = trajectory['rewards'] - values +gamma*P_a[:, np.newaxis]# gamma * np.append(values[1:], values[-1]), axis=0)  #
 
 
@@ -244,10 +241,10 @@ def add_disc_sum_rew(trajectories, policy, network, gamma, lam, scaler, iteratio
             #TODO: ensure that gamma<1 works
             if gamma < 1:
                 #advantages = discount(x=tds_pi,   gamma=lam*gamma, v_last = tds_pi[-1]) - tds_pi + tds_a   # advantage function
-                disc_sum_rew = discount(x=tds_pi,   gamma= lam*gamma, v_last = tds_pi[-1]) + values
+                 disc_sum_rew = discount(x=tds_pi,   gamma= lam*gamma, v_last = tds_pi[-1]) + values
             else:
                 #advantages = relarive_af(unscaled_obs, td_pi=tds_pi, td_act=tds_a, lam=lam)  # advantage function
-                disc_sum_rew = relarive_af(unscaled_obs, td_pi=tds_pi, lam=lam) + values # advantage function
+                disc_sum_rew = relarive_af(unscaled_obs, td_pi=tds_pi, lam=lam) #+ values # advantage function
 
         else:
             if gamma < 1:
@@ -256,7 +253,7 @@ def add_disc_sum_rew(trajectories, policy, network, gamma, lam, scaler, iteratio
             else:
 
                 #advantages = relarive_af(unscaled_obs, td_pi=tds_pi, td_act=tds_a, lam=lam)  # advantage function
-                disc_sum_rew = relarive_af(trajectory['unscaled_obs'], td_pi=trajectory['rewards'], lam=1)  # advantage function
+                disc_sum_rew = relarive_af(trajectory['unscaled_obs'], td_pi=trajectory['rewards'], lam=lam)  # advantage function
 
 
         #trajectory['advantages'] = np.asarray(advantages)
@@ -274,6 +271,7 @@ def add_disc_sum_rew(trajectories, policy, network, gamma, lam, scaler, iteratio
     if iteration ==1:
         scaler.update(np.hstack((unscaled_obs, disc_sum_rew)))
     scale, offset = scaler.get()
+
     observes = (unscaled_obs - offset[:-1]) * scale[:-1]
     disc_sum_rew_norm = (disc_sum_rew - offset[-1]) * scale[-1]
     if iteration ==1:
@@ -398,7 +396,17 @@ def build_train_set(trajectories, gamma, scaler):
     unscaled_obs = np.concatenate([t['unscaled_obs'][:-burn] for t in trajectories])
     disc_sum_rew = np.concatenate([t['disc_sum_rew'][:-burn] for t in trajectories])
 
+
+
+    #observes = (unscaled_obs - offset[:-1]) * scale[:-1]
+    #disc_sum_rew_norm = (disc_sum_rew - offset[-1]) * scale[-1]
+
+
+
+
     scale, offset = scaler.get()
+
+
     actions = np.concatenate([t['actions'][:-burn] for t in trajectories])
     advantages = np.concatenate([t['advantages'][:-burn] for t in trajectories])
     observes = (unscaled_obs - offset[:-1]) * scale[:-1]
@@ -527,9 +535,10 @@ def main(network_id, num_policy_iterations, gamma, lam, kl_targ, batch_size, hid
         observes, disc_sum_rew_norm = add_disc_sum_rew(trajectories, policy, ray.get(network_id), gamma, lam, scaler, iteration)  # calculate values from data
 
         val_func.fit(observes, disc_sum_rew_norm, logger)  # update value function
+
         add_value(trajectories, val_func, scaler,
                   ray.get(network_id).next_state_list)  # add estimated values to episodes
-        observes, actions, advantages, disc_sum_rew = build_train_set(trajectories, gamma, scaler)
+        observes, actions, advantages, disc_sum_rew =  build_train_set(trajectories, gamma, scaler)
 
 
         #scale, offset = scaler.get()
@@ -552,7 +561,7 @@ def main(network_id, num_policy_iterations, gamma, lam, kl_targ, batch_size, hid
     weights_set.append(policy.get_weights())
     scaler_set.append(copy.copy(scaler))
 
-    performance_evolution_all, ci_all = run_weights(network_id, weights_set, policy, scaler,cycles = 5000000)
+    performance_evolution_all, ci_all = run_weights(network_id, weights_set, policy, scaler,cycles = 5*10**7)
 
     #performance_evolution = run_weights(network_id, len(weights_set)*[weights_set[-1]], policy, scaler,
     #                                    time_steps=int(1. / sum(ray.get(network_id).p_arriving) * 10**3))
@@ -586,7 +595,7 @@ if __name__ == "__main__":
 
 
     start_time = datetime.datetime.now()
-    network = pn.ProcessingNetwork.from_name('criss_crossBM') # queuing network declaration
+    network = pn.ProcessingNetwork.from_name('criss_crossIL') # queuing network declaration
 
     end_time = datetime.datetime.now()
     time_policy = end_time - start_time
@@ -613,7 +622,7 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--episode_duration', type=int, help='Number of time-steps per an episode',
                         default = 10**6)
     parser.add_argument('-y', '--cycles_num', type=int, help='Number of cycles',
-                        default = 2000)
+                        default = 1000)
     parser.add_argument('-c', '--clipping_parameter', type=float, help='Initial clipping parameter',
                         default = 0.2)
     parser.add_argument('-s', '--skipping_steps', type=int, help='Number of steps for which control is fixed',
