@@ -231,7 +231,8 @@ def add_disc_sum_rew(trajectories, policy, network, gamma, lam, scaler, iteratio
 
 
             # td-error computing
-            tds_pi = trajectory['rewards'] - values + gamma*P_pi[:, np.newaxis]#gamma * np.append(values[1:], values[-1]), axis=0)#
+            #tds_pi = trajectory['rewards'] - values + gamma * np.append(values[1:], [values[-1]], axis=0)#gamma*P_pi[:, np.newaxis]
+            tds_pi  = trajectory['rewards'] + gamma*P_pi[:, np.newaxis] - values
             # tds_a = trajectory['rewards'] - values +gamma*P_a[:, np.newaxis]# gamma * np.append(values[1:], values[-1]), axis=0)  #
 
 
@@ -244,7 +245,8 @@ def add_disc_sum_rew(trajectories, policy, network, gamma, lam, scaler, iteratio
                  disc_sum_rew = discount(x=tds_pi,   gamma= lam*gamma, v_last = tds_pi[-1]) + values
             else:
                 #advantages = relarive_af(unscaled_obs, td_pi=tds_pi, td_act=tds_a, lam=lam)  # advantage function
-                disc_sum_rew = relarive_af(unscaled_obs, td_pi=tds_pi, lam=lam) #+ values # advantage function
+                disc_sum_rew = relarive_af(unscaled_obs, td_pi=tds_pi, lam=lam) + values # value function with control variate
+                #disc_sum_rew  = relarive_af(unscaled_obs, td_pi=tds_pi, lam=lam)   # value function without control variate
 
         else:
             if gamma < 1:
@@ -268,12 +270,36 @@ def add_disc_sum_rew(trajectories, policy, network, gamma, lam, scaler, iteratio
 
     unscaled_obs = np.concatenate([t['unscaled_obs'][:-burn] for t in trajectories])
     disc_sum_rew = np.concatenate([t['disc_sum_rew'][:-burn] for t in trajectories])
+
+    # ########## averaging value function estimations over all data ##########################
+    states_sum = {}
+    states_number = {}
+    states_positions = {}
+
+    for i in range(len(unscaled_obs)):
+        if tuple(unscaled_obs[i]) not in states_sum:
+            states_sum[tuple(unscaled_obs[i])] = disc_sum_rew[i]
+            states_number[tuple(unscaled_obs[i])] = 1
+            states_positions[tuple(unscaled_obs[i])] = [i]
+
+        else:
+            states_sum[tuple(unscaled_obs[i])] += disc_sum_rew[i]
+            states_number[tuple(unscaled_obs[i])] += 1
+            states_positions[tuple(unscaled_obs[i])].append(i)
+
+    for key in states_sum:
+        av = states_sum[key] / states_number[key]
+        for i in states_positions[key]:
+            disc_sum_rew[i] = av
+    # ########################################################################################
+
+
     if iteration ==1:
         scaler.update(np.hstack((unscaled_obs, disc_sum_rew)))
     scale, offset = scaler.get()
 
     observes = (unscaled_obs - offset[:-1]) * scale[:-1]
-    disc_sum_rew_norm = (disc_sum_rew - offset[-1]) * scale[-1]
+    disc_sum_rew_norm = (disc_sum_rew - offset[-1]) *scale[-1]
     if iteration ==1:
         for t in trajectories:
             t['observes'] = (t['unscaled_obs'] - offset[:-1]) * scale[:-1]
@@ -414,27 +440,7 @@ def build_train_set(trajectories, gamma, scaler):
 
 
 
-    # ########## averaging value function estimations over all data ##########################
-    states_sum = {}
-    states_number = {}
-    states_positions = {}
 
-    for i in range(len(unscaled_obs)):
-        if tuple(unscaled_obs[i]) not in states_sum:
-            states_sum[tuple(unscaled_obs[i])] = disc_sum_rew[i]
-            states_number[tuple(unscaled_obs[i])] = 1
-            states_positions[tuple(unscaled_obs[i])] = [i]
-
-        else:
-            states_sum[tuple(unscaled_obs[i])] +=  disc_sum_rew[i]
-            states_number[tuple(unscaled_obs[i])] += 1
-            states_positions[tuple(unscaled_obs[i])].append(i)
-
-    for key in states_sum:
-        av = states_sum[key] / states_number[key]
-        for i in states_positions[key]:
-            disc_sum_rew[i] = av
-    # ########################################################################################
     end_time = datetime.datetime.now()
     time_policy = end_time - start_time
     print('build_train_set time:', int((time_policy.total_seconds() / 60) * 100) / 100., 'minutes')
@@ -532,6 +538,7 @@ def main(network_id, num_policy_iterations, gamma, lam, kl_targ, batch_size, hid
 
         add_value(trajectories, val_func, scaler,
                   ray.get(network_id).next_state_list)  # add estimated values to episodes
+
         observes, disc_sum_rew_norm = add_disc_sum_rew(trajectories, policy, ray.get(network_id), gamma, lam, scaler, iteration)  # calculate values from data
 
         val_func.fit(observes, disc_sum_rew_norm, logger)  # update value function
@@ -622,7 +629,7 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--episode_duration', type=int, help='Number of time-steps per an episode',
                         default = 10**6)
     parser.add_argument('-y', '--cycles_num', type=int, help='Number of cycles',
-                        default = 1000)
+                        default = 2000)
     parser.add_argument('-c', '--clipping_parameter', type=float, help='Initial clipping parameter',
                         default = 0.2)
     parser.add_argument('-s', '--skipping_steps', type=int, help='Number of steps for which control is fixed',

@@ -38,7 +38,7 @@ class NNValueFunction(object):
             hid3_size = 10  # 5 chosen empirically on 'Hopper-v1'
             hid2_size = int(np.sqrt(hid1_size * hid3_size))
             # heuristic to set learning rate based on NN size (tuned on 'Hopper-v1')
-            self.lr = 2.5 * 10**(-4)
+            self.lr = 1. * 10**(-4)
             #print('Value Params -- h1: {}, h2: {}, h3: {}, lr: {:.3g}'
             #      .format(hid1_size, hid2_size, hid3_size, self.lr))
             # 3 hidden layers with tanh activations
@@ -70,7 +70,7 @@ class NNValueFunction(object):
             y: target
             logger: logger to save training loss and % explained variance
         """
-        num_batches = max(x.shape[0] // 256, 1)
+        num_batches = max(x.shape[0] // 254, 1)
         batch_size = x.shape[0] // num_batches
 
 
