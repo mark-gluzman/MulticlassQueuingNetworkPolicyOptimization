@@ -1,19 +1,17 @@
 '''
 n model with many servers -- immediate commitment version
 
-routing and scheduling decisions are made by separated functions
+routing and scheduling decisions made separately
 
 routing: wwta / from rl
-scheduling: cmu from rl
+scheduling: cmu / from rl
 cost function: linear
 
-revise function route_rl as remarked to enable rl control according to policy from nn:route_model
-two possible actions to make:
+allows two possible actions to be made:
     action 0: route incoming class 1 customer to queue 0
     action 1: route incoming class 1 customer to queue 1
 
-revise function schedule_rl as remarked to enable rl control according to policy from nn:schedule_model
-two possible actions to make:
+allows two possible actions to be made:
     action 0: prioritize queue 2 at server pool 2
     action 1: prioritize queue 3 at server pool 3
 pool 1 is simple non-idling FCFS
@@ -35,7 +33,7 @@ N_1,N_2 = (20,20)
 
 g_simulation_rounds = 50000
 
-g_routing_nn_model = None
+g_routing_nn_model = None # replace with corresponding NN
 g_scheduling_nn_model = None
 g_preemptive_choice = True
 
@@ -86,7 +84,10 @@ g_policy_schedule = {
 
 }
 
-def jump_next(dynamic_data,static_data): # next system jump event without routing/scheduling: arrive / service completion; does not alter the dynamic_data yet
+def jump_next(dynamic_data,static_data): 
+    '''
+    next system jump event without routing/scheduling: arrive / service completion; does not alter the dynamic_data yet
+    '''
     current_occupations = dynamic_data['occupations']
     total_rate = static_data['uniformization factor']
     lambda_val = static_data['arrival rates']
@@ -102,15 +103,22 @@ def jump_next(dynamic_data,static_data): # next system jump event without routin
     return jump
 
 def sampler(current_queue,service_rates,current_occupations,route_model,schedule_model):
+    '''
+    sample actions
+    return routing_action,scheduling_action
+    '''
+    
     r_action_distr = np.array([0,0])
     if route_model == None: # 'wwta' routing
         loads = current_queue/service_rates
         r_action_distr[int(loads[0]/service_rates[0]>(loads[1]+loads[2])/service_rates[1])] += 1
     else: # route_model is a NN
-        pass
+            
         '''
         fill in intermediate steps to extract the distribution for routing actions from nn:route_model
         '''
+        pass
+        
         
     r_action_sample = np.random.choice(np.arange(0,2),p=r_action_distr)
 
@@ -121,17 +129,27 @@ def sampler(current_queue,service_rates,current_occupations,route_model,schedule
         '''
         fill in intermediate steps to extract the distribution for routing actions from nn:route_model
         '''
+        pass
+    
     s_action_sample = np.random.choice(np.arange(0,2),p=s_action_distr)
 
     return (r_action_sample,s_action_sample)
 
 
 def route_rl(current_queue,service_rates,jump_value,current_occupations,pool_size,route_action_sample):
+    '''
+    return finalized information for true change of queue lengths
+    first half as results of arrival; second half as results of completion
+    '''
     jump_real = np.concatenate((np.zeros(2,dtype=int),np.array([jump_value[1]]),-jump_value[2:]),0)
     jump_real[route_action_sample] = 1
     return jump_real
 
 def schedule_rl(current_queue,service_rates,jump_real,current_occupations,pool_size,schedule_action_sample,preemptive=True): # this function assumes preemptive spn
+    '''
+    return finalized information for true change of server commitments
+    always assume preeptive
+    '''
     sche_jump = np.zeros(3,dtype=int)
     action_sample = schedule_action_sample
 
@@ -151,6 +169,12 @@ def schedule_rl(current_queue,service_rates,jump_real,current_occupations,pool_s
     return sche_jump
 
 def control_next(dynamic_data,static_data,jump_value,route_model=g_routing_nn_model,schedule_model=g_scheduling_nn_model,preemptive=g_preemptive_choice):
+    '''
+    update to the next state
+    input current state and jump
+    output new state and actions sampled
+    '''
+    
     # static attributes
     service_rates = static_data['service rates']
     pool_size = static_data['pool sizes']
@@ -183,7 +207,10 @@ def control_next(dynamic_data,static_data,jump_value,route_model=g_routing_nn_mo
     return dynamic_data,static_data,(r_action_sample,s_action_sample)
 
 def simulation(dynamic_data,static_data,simulation_rounds,route_model=g_routing_nn_model,schedule_model=g_scheduling_nn_model,preemptive=g_preemptive_choice):
-
+    '''
+    integrated simulator for trajactories
+    output as you wish
+    '''
     avg_cost_curve = np.zeros(simulation_rounds,dtype=float)
     q0_lengths = np.zeros(simulation_rounds,dtype=int)
     q1_lengths = np.zeros(simulation_rounds,dtype=int)
