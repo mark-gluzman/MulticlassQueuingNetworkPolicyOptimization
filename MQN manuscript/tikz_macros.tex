@@ -1,0 +1,64 @@
+\definecolor{processblue}{cmyk}{0.96,0,0,0}
+\tikzset{
+  server/.style={circle, inner sep=0.0mm, minimum width=.8cm,
+    draw=green,fill=green!10,thick},
+  ellipseserver/.style={ellipse, inner sep=0.0mm, minimum width=.8cm,
+    draw=green,fill=green!10,thick},
+  buffer/.style={rectangle, rounded corners=3pt,
+    inner sep=0.0mm, minimum width=.9cm, minimum height=.6cm,
+    draw=orange,fill=blue!10,thick},
+  vbuffer/.style={rectangle,rounded corners=3pt,
+     inner sep=0.0mm,  minimum width=.6cm, minimum height=.8cm,
+     draw=orange,fill=blue!10,thick},
+   routing/.style={circle,inner sep=0pt,minimum size=.5cm,
+     draw=red,minimum width=.1cm, fill=red!30},
+   state/.style={inner sep=1.0mm, rounded corners=2pt,
+    draw=green,fill=green!10,thick},
+  dot/.style={circle, inner sep=0.0mm, minimum width=.6cm,
+    draw=blue,fill=blue!10,thick},
+  task/.style={circle, inner sep=0.0mm, minimum width=.6cm,
+    draw=blue,fill=blue!10,thick},
+  data/.style={rectangle, inner sep=0.0mm, minimum width=.5cm,
+    minimum height=.4cm,
+    draw=red,fill=red!10,thick}
+}
+
+\tikzset{
+  pics/openrectangle/.style n args={3}{
+    code = { %
+      \pgfmathsetmacro\x{.5}
+      \pgfmathsetmacro\y{4}
+      \pgfmathsetmacro\z{.55}
+      \coordinate (SN) at #1;
+      \coordinate (SS) at ($(0,-.3)+#1$);
+      \draw[thick,red] ([shift={(-\x,\y)}]SN)--([shift={(-\x, \z)}]SN)
+      --([shift={(\x,\z)}]SN)--([shift={(\x,\y)}]SN);
+
+      \foreach \i/\t in #2
+      {
+        \node[task] (\t) at ([shift={(0,\i)}]SN)  {\t};
+      }
+
+      \foreach \i/\d in #3
+      {
+        \node[data] (\d) at ([shift={(0,-\i)}]SS)  {C\d};
+      }
+    }
+  }
+}
+
+\tikzset{
+  pics/rack/.style n args={3}{
+    code = { %
+      \pgfmathsetmacro\x{1.7}
+      \pgfmathsetmacro\y{4}
+      \pgfmathsetmacro\z{-2}
+      \pgfmathsetmacro\zz{-2.5}
+      \coordinate (S) at ($#1!.5!#2$);
+      \draw[thick,blue] ([shift={(-\x,\y)}]S)--([shift={(-\x, \z)}]S)
+      --([shift={(\x,\z)}]S)--([shift={(\x,\y)}]S);
+      \node at ([shift={(0,\zz)}]S) {Rack #3};
+    }
+  }
+}
+

@@ -1,0 +1,495 @@
+\def\cprime{$'$} \def\cprime{$'$} \def\cprime{$'$} \def\cprime{$'$}
+  \def\cprime{$'$} \def\cprime{$'$} \def\cprime{$'$}
+\begin{thebibliography}{}
+
+\bibitem[\protect\astroncite{Abadi et~al.}{2016}]{Abadi2016}
+Abadi, M., Barham, P., Chen, J., Chen, Z., Davis, A., Dean, J., Devin, M.,
+  Ghemawat, S., Irving, G., Isard, M., Kudlur, M., Levenberg, J., Monga, R.,
+  Moore, S., Murray, D.~G., Steiner, B., Tucker, P., Vasudevan, V., Warden, P.,
+  Wicke, M., Yu, Y., and Zheng, X. (2016).
+\newblock {TensorFlow: A System for Large-Scale Machine Learning}.
+\newblock In {\em 12th USENIX Symposium on Operating Systems Design and
+  Implementation (OSDI 16)}, pages 265--283. USENIX Association.
+
+\bibitem[\protect\astroncite{Abbasi-Yadkori et~al.}{2014}]{Abbasi_Yadkori2014a}
+Abbasi-Yadkori, Y., Bartlett, P., and Malek, A. (2014).
+\newblock {Linear programming for large-scale Markov decision problems}.
+\newblock In {\em Proceeding ICML'14 Proceedings of the 31st International
+  Conference on International Conference on Machine Learning - Volume 32},
+  pages 496--504.
+
+\bibitem[\protect\astroncite{Andrad{\'{o}}ttir et~al.}{1993}]{Andradottir1993}
+Andrad{\'{o}}ttir, S., Heyman, D.~P., and Ott, T.~J. (1993).
+\newblock {Variance Reduction Through Smoothing and Control Variates for Markov
+  Chain Simulations}.
+\newblock {\em ACM Transactions on Modeling and Computer Simulation (TOMACS)},
+  3(3):167--189.
+
+\bibitem[\protect\astroncite{Asmussen}{2003}]{Asmussen2003}
+Asmussen, S. (2003).
+\newblock {\em {Applied Probability and Queues}}.
+\newblock Springer New York.
+
+\bibitem[\protect\astroncite{Ata and Kumar}{2005}]{AtaKuma2005}
+Ata, B. and Kumar, S. (2005).
+\newblock Heavy traffic analysis of open processing networks with complete
+  resource pooling: asymptotic optimality of discrete review policies.
+\newblock {\em Annals of Applied Probability}, 15:331--391.
+
+\bibitem[\protect\astroncite{Avram et~al.}{1995}]{Avram1995}
+Avram, F., Bertsimas, D., and Ricard, M. (1995).
+\newblock {Fluid models of sequencing problems in open queueing networks: an
+  optimal control approach}.
+\newblock In Kelly, F. and Williams, R.~J., editors, {\em Stochastic Networks},
+  volume~71, page 237. Springer, New York.
+
+\bibitem[\protect\astroncite{B{\"{a}}uerle}{2001}]{Bauerle2001}
+B{\"{a}}uerle, N. (2001).
+\newblock {Asymptotic optimality of tracking policies in stochastic networks}.
+\newblock {\em The Annals of Applied Probability}, 10(4):1065--1083.
+
+\bibitem[\protect\astroncite{Baxter and Bartlett}{2001}]{Baxter2001}
+Baxter, J. and Bartlett, P.~L. (2001).
+\newblock {Infinite-Horizon Policy-Gradient Estimation}.
+\newblock {\em Journal of Artificial Intelligence Research}, 15:319--350.
+
+\bibitem[\protect\astroncite{Bell and Williams}{2001}]{Bell2001}
+Bell, S.~L. and Williams, R.~J. (2001).
+\newblock {Dynamic scheduling of a system with two parallel servers in heavy
+  traffic with resource pooling: asymptotic optimality of a threshold policy}.
+\newblock {\em The Annals of Applied Probability}, 11(3):608--649.
+
+\bibitem[\protect\astroncite{Bellemare et~al.}{2013}]{Bellemare2013}
+Bellemare, M.~G., Naddaf, Y., Veness, J., and Bowling, M. (2013).
+\newblock {The arcade learning environment: an evaluation platform for general
+  agents}.
+\newblock {\em Journal of Artificial Intelligence Research}, 47(1):253--279.
+
+\bibitem[\protect\astroncite{Bertsimas et~al.}{2011}]{Bertsimas2011}
+Bertsimas, D., Gamarnik, D., and {Anatoliy Rikun}, A. (2011).
+\newblock {Performance analysis of queueing networks via robust optimization}.
+\newblock {\em Operations Research}, 59(2):455--466.
+
+\bibitem[\protect\astroncite{Bertsimas et~al.}{2015}]{Bertsimas2015}
+Bertsimas, D., Nasrabadi, E., and Paschalidis, I.~C. (2015).
+\newblock {Robust Fluid Processing Networks}.
+\newblock {\em IEEE Transactions on Automatic Control}, 60(3):715--728.
+
+\bibitem[\protect\astroncite{Bertsimas et~al.}{1994}]{BertPascTsit1994}
+Bertsimas, D., Paschalidis, I.~C., and Tsitsiklis, J. (1994).
+\newblock Optimization of multiclass queueing networks: Polyhedral and
+  nonlinear characterizations of achievable performance.
+\newblock {\em The Annals of Applied Probability}, 4:43--75.
+
+\bibitem[\protect\astroncite{Beutler and Ross}{1987}]{Beutler1987}
+Beutler, F.~J. and Ross, K.~W. (1987).
+\newblock {Uniformization for semi-Markov decision processes under stationary
+  policies}.
+\newblock {\em Journal of Applied Probability}, 24(3):644--656.
+
+\bibitem[\protect\astroncite{Bhatnagar and Lakshmanan}{2012}]{Bhatnagar2012}
+Bhatnagar, S. and Lakshmanan, K. (2012).
+\newblock {An Online Actor-Critic Algorithm with Function Approximation for
+  Constrained Markov Decision Processes}.
+\newblock {\em Journal of Optimization Theory and Applications},
+  153(3):688--708.
+
+\bibitem[\protect\astroncite{Bramson}{1996}]{Bramson1996}
+Bramson, M. (1996).
+\newblock {Convergence to equilibria for fluid models of head-of-the-line
+  proportional processor sharing queueing networks}.
+\newblock {\em Queueing Systems}, 23(1-4):1--26.
+
+\bibitem[\protect\astroncite{Bramson}{1998}]{Bram1998a}
+Bramson, M. (1998).
+\newblock State space collapse with application to heavy traffic limits for
+  multiclass queueing networks.
+\newblock {\em Queueing Systems. Theory and Applications}, 30:89--140.
+
+\bibitem[\protect\astroncite{Chen and Yao}{1993}]{ChenYao1993}
+Chen, H. and Yao, D. (1993).
+\newblock Dynamic scheduling of a multiclass fluid network.
+\newblock {\em Operations Research}, 41:1104--1115.
+
+\bibitem[\protect\astroncite{Chen and Meyn}{1999}]{ChenMeyn1999}
+Chen, R.-R. and Meyn, S. (1999).
+\newblock Value iteration and optimization of multiclass queueing networks.
+\newblock {\em Queueing Systems}, 32:65--97.
+
+\bibitem[\protect\astroncite{Chen et~al.}{2009}]{Chenetal2009}
+Chen, W., Huang, D., Kulkarni, A.~A., Unnikrishnan, J., Zhu, Q., Mehta, P.,
+  Meyn, S., and Wierman, A. (2009).
+\newblock Approximate dynamic programming using fluid and diffusion
+  approximations with applications to power management.
+\newblock In {\em Proceedings of the 48h IEEE Conference on Decision and
+  Control (CDC) held jointly with 2009 28th Chinese Control Conference}, pages
+  3575--3580.
+
+\bibitem[\protect\astroncite{Cooper et~al.}{2003}]{Cooper2003}
+Cooper, W.~L., Henderson, S.~G., and Lewis, M.~E. (2003).
+\newblock {Convergence of simulation-based policy iteration}.
+\newblock {\em Probability in the Engineering and Informational Sciences},
+  17(2):213--234.
+
+\bibitem[\protect\astroncite{Dai and Shi}{2019}]{DaiShi2019}
+Dai, J. and Shi, P. (2019).
+\newblock Inpatient overflow: An approximate dynamic programming approach.
+\newblock {\em Manufacturing \& Service Operations Management}, 21(4):894--911.
+
+\bibitem[\protect\astroncite{Dai and Harrison}{2020}]{DaiHarr2020}
+Dai, J.~G. and Harrison, J.~M. (2020).
+\newblock {\em Processing Networks: Fluid Models and Stability}.
+\newblock Cambridge University Press, Cambridge, UK.
+
+\bibitem[\protect\astroncite{Dai and Weiss}{1996}]{Dai1996}
+Dai, J.~G. and Weiss, G. (1996).
+\newblock {Stability and Instability of Fluid Models for Reentrant Lines}.
+\newblock {\em Mathematics of Operations Research}, 21(1):115--134.
+
+\bibitem[\protect\astroncite{de~Farias and {Van Roy}}{2003}]{DeFarias2003a}
+de~Farias, D.~P. and {Van Roy}, B. (2003).
+\newblock {The Linear Programming Approach to Approximate Dynamic Programming}.
+\newblock {\em Operations Research}, 51(6):850--865.
+
+\bibitem[\protect\astroncite{Glorot and Bengio}{2010}]{Glorot2010}
+Glorot, X. and Bengio, Y. (2010).
+\newblock {Understanding the difficulty of training deep feedforward neural
+  networks}.
+\newblock In {\em Proceedings of the Thirteenth International Conference on
+  Artificial Intelligence and Statistics}, pages 249--256.
+
+\bibitem[\protect\astroncite{Glynn and Meyn}{1996}]{Glynn1996}
+Glynn, P.~W. and Meyn, S.~P. (1996).
+\newblock {A Liapounov bound for solutions of the Poisson equation}.
+\newblock {\em Annals of Probability}, 24(2):916--931.
+
+\bibitem[\protect\astroncite{Harrison}{1988}]{Harr1988}
+Harrison, J.~M. (1988).
+\newblock Brownian models of queueing networks with heterogeneous customer
+  populations.
+\newblock In Fleming, W. and Lions, P.~L., editors, {\em Stochastic
+  Differential Systems, Stochastic Control Theory and Applications}, volume~10
+  of {\em The IMA Volumes in Mathematics and Its Applications}, pages 147--186.
+  Springer, New York, NY.
+
+\bibitem[\protect\astroncite{Harrison}{1996}]{Harr1996}
+Harrison, J.~M. (1996).
+\newblock The {bigstep} approach to flow management in stochastic processing
+  networks.
+\newblock In F.~P.~Kelly, S.~Z. and Ziedins, I., editors, {\em Stochastic
+  Networks: Theory and Applications}, volume~4 of {\em Lecture Note Series},
+  pages 57--90. Oxford University Press.
+
+\bibitem[\protect\astroncite{Harrison}{1998}]{Harrison1998}
+Harrison, J.~M. (1998).
+\newblock {Heavy traffic analysis of a system with parallel servers: asymptotic
+  optimality of discrete-review policies}.
+\newblock {\em The Annals of Applied Probability}, 8(3):822--848.
+
+\bibitem[\protect\astroncite{Harrison}{2000}]{Harr2000}
+Harrison, J.~M. (2000).
+\newblock Brownian models of open processing networks: canonical representation
+  of workload.
+\newblock {\em Ann. Appl. Probab.}, 10(1):75--103.
+\newblock corrections: {\bf 13}, 390--393 (2003) and {\bf 16}, 1703-1732
+  (2006).
+
+\bibitem[\protect\astroncite{Harrison}{2002}]{Harr2002}
+Harrison, J.~M. (2002).
+\newblock Stochastic networks and activity analysis.
+\newblock In Suhov, Y.~M., editor, {\em Analytic Methods in Applied
+  Probability: In memory of {Fridrikh Karpelevich}}, volume 207 of {\em
+  American Mathematical Society Translations: Series 2}, pages 53--76,
+  Providence, RI. American Mathematical Society.
+
+\bibitem[\protect\astroncite{Harrison and Nguyen}{1993}]{HarrNguy1993}
+Harrison, J.~M. and Nguyen, V. (1993).
+\newblock Brownian models of multiclass queueing networks: current status and
+  open problems.
+\newblock {\em Queueing Systems Theory Appl.}, 13(1-3):5--40.
+
+\bibitem[\protect\astroncite{Harrison and Wein}{1990}]{Harrison1990}
+Harrison, J.~M. and Wein, L.~M. (1990).
+\newblock {Scheduling Networks of Queues: Heavy Traffic Analysis of a
+  Two-Station Closed Network}.
+\newblock {\em Operations Research}, 38(6):1052--1064.
+
+\bibitem[\protect\astroncite{Henderson and Glynn}{2002}]{Henderson2002}
+Henderson, S.~G. and Glynn, P.~W. (2002).
+\newblock {Approximating martingales for variance reduction in Markov process
+  simulation}.
+\newblock {\em Mathematics of Operations Research}, 27(2):253--271.
+
+\bibitem[\protect\astroncite{Henderson and Meyn}{1997}]{Henderson1997}
+Henderson, S.~G. and Meyn, S.~P. (1997).
+\newblock {Efficient simulation of multiclass queueing networks}.
+\newblock In {\em Proceedings of the 29th conference on Winter simulation - WSC
+  '97}, pages 216--223, New York, New York, USA. ACM Press.
+
+\bibitem[\protect\astroncite{Henderson et~al.}{2003}]{HendMeynTadi2003}
+Henderson, S.~G., Meyn, S.~P., and Tadi{\'c}, V.~B. (2003).
+\newblock Performance evaluation and policy selection in multiclass networks.
+\newblock {\em Discrete Event Dyn. Syst.}, 13(1-2):149--189.
+\newblock Special issue on learning, optimization and decision making.
+
+\bibitem[\protect\astroncite{Ilyas et~al.}{2020}]{Ilyas2020}
+Ilyas, A., Engstrom, L., Santurkar, S., Tsipras, D., Janoos, F., Rudolph, L.,
+  and Adry, A.~M. (2020).
+\newblock {A Closer Look at Deep Policy Gradients}.
+\newblock In {\em ICLR}.
+
+\bibitem[\protect\astroncite{Jaakkola et~al.}{1994}]{Jaakkola1994}
+Jaakkola, T., {P. Singh}, S., and Jordan, M.~I. (1994).
+\newblock {Reinforcement learning algorithm for partially observable Markov
+  decision problems}.
+\newblock In {\em Proceedings of the 7th International Conference on Neural
+  Information Processing Systems}, pages 345--352.
+
+\bibitem[\protect\astroncite{Jiang et~al.}{2017}]{Jiang2017}
+Jiang, S., Liu, Y., and Tang, Y. (2017).
+\newblock {A unified perturbation analysis framework for countable Markov
+  chains}.
+\newblock {\em Linear Algebra and Its Applications}, 529:413--440.
+
+\bibitem[\protect\astroncite{Kakade}{2001}]{Kakade2001}
+Kakade, S. (2001).
+\newblock {Optimizing Average Reward Using Discounted Rewards}.
+\newblock In {\em COLT '01/EuroCOLT '01}, pages 605--615.
+
+\bibitem[\protect\astroncite{Kakade and Langford}{2002}]{Kakade2002}
+Kakade, S. and Langford, J. (2002).
+\newblock {Approximately Optimal Approximate Reinforcement Learning}.
+\newblock In {\em Proceedings of the Nineteenth International Conference on
+  Machine Learning}, pages 267--274. Morgan Kaufmann Publishers.
+
+\bibitem[\protect\astroncite{Kemeny et~al.}{1976}]{Kemeny1976}
+Kemeny, J.~G., Snell, J.~L., and Knapp, A.~W. (1976).
+\newblock {\em {Denumerable Markov Chains}}.
+\newblock Springer New York.
+
+\bibitem[\protect\astroncite{Kingma and Ba}{2015}]{Kingma2017}
+Kingma, D.~P. and Ba, J. (2015).
+\newblock {Adam: A Method for Stochastic Optimization}.
+\newblock In {\em ICLR}.
+
+\bibitem[\protect\astroncite{Konda and Tsitsiklis}{2003}]{Konda2003}
+Konda, V.~R. and Tsitsiklis, J.~N. (2003).
+\newblock {On actor-critic algorithms}.
+\newblock {\em SIAM Journal on Control and Optimization}, 42(4):1143--1166.
+
+\bibitem[\protect\astroncite{Kumar}{1993}]{Kuma1993}
+Kumar, P.~R. (1993).
+\newblock Re-entrant lines.
+\newblock {\em Queueing Systems Theory Appl.}, 13(1-3):87--110.
+
+\bibitem[\protect\astroncite{Kumar and Kumar}{1994}]{KumaKuma1994}
+Kumar, S. and Kumar, P.~R. (1994).
+\newblock Performance bounds for queueing networks and scheduling policies.
+\newblock {\em {IEEE} Transactions on Automatic Control}, AC-39:1600--1611.
+
+\bibitem[\protect\astroncite{Kumar and Kumar}{1996}]{KumaKuma1996}
+Kumar, S. and Kumar, P.~R. (1996).
+\newblock Fluctuation smoothing policies are stable for stochastic reentrant
+  lines.
+\newblock {\em Discrete Event Dynamic Systems}, 6:361--370.
+
+\bibitem[\protect\astroncite{Lehnert et~al.}{2018}]{Lehnert2018}
+Lehnert, L., Laroche, R., and van Seijen, H. (2018).
+\newblock {On Value Function Representation of Long Horizon Problems}.
+\newblock {\em Thirty-Second AAAI Conference on Artificial Intelligence}.
+
+\bibitem[\protect\astroncite{Lu et~al.}{1994}]{LuRamaKuma1994}
+Lu, S. C.~H., Ramaswamy, D., and Kumar, P.~R. (1994).
+\newblock Efficient scheduling policies to reduce mean and variance of
+  cycle-time in semiconductor manufacturing plants.
+\newblock {\em {IEEE} Transactions on Semiconductor Manufacturing},
+  7(3):374--388.
+
+\bibitem[\protect\astroncite{Luong et~al.}{2019}]{Luong2019}
+Luong, N.~C., Hoang, D.~T., Gong, S., Niyato, D., Wang, P., Liang, Y.~C., and
+  Kim, D.~I. (2019).
+\newblock {Applications of Deep Reinforcement Learning in Communications and
+  Networking: A Survey}.
+\newblock {\em IEEE Communications Surveys and Tutorials}, 21(4):3133--3174.
+
+\bibitem[\protect\astroncite{Maglaras}{2000}]{Maglaras2000}
+Maglaras, C. (2000).
+\newblock {Discrete-review policies for scheduling stochastic networks:
+  trajectory tracking and fluid-scale asymptotic optimality}.
+\newblock {\em The Annals of Applied Probability}, 10(3):897--929.
+
+\bibitem[\protect\astroncite{Maguluri et~al.}{2012}]{MaguSrikYing2012}
+Maguluri, S., Srikant, R., and Ying, L. (2012).
+\newblock Stochastic models of load balancing and scheduling in cloud computing
+  clusters.
+\newblock In {\em INFOCOM, 2012 Proceedings IEEE}, pages 702--710.
+
+\bibitem[\protect\astroncite{Marbach and Tsitsiklis}{2001}]{Marbach2001}
+Marbach, P. and Tsitsiklis, J.~N. (2001).
+\newblock {Simulation-based optimization of Markov reward processes}.
+\newblock {\em IEEE Transactions on Automatic Control}, 46(2):191--209.
+
+\bibitem[\protect\astroncite{Martins et~al.}{1996}]{Martins1996}
+Martins, L.~F., Shreve, S.~E., and Soner, H.~M. (1996).
+\newblock {Heavy traffic convergence of a controlled, multiclass queueing
+  system}.
+\newblock {\em SIAM Journal on Control and Optimization}, 34(6):2133--2171.
+
+\bibitem[\protect\astroncite{McKeown et~al.}{1999}]{MMAW1999}
+McKeown, N., Mekkittikul, A., Anantharam, V., and Walrand, J. (1999).
+\newblock Achieving 100\% throughput in an input-queued switch.
+\newblock {\em IEEE Transactions on Communications}, 47(8):1260--1267.
+
+\bibitem[\protect\astroncite{Meyn}{1997}]{Meyn1997}
+Meyn, S. (1997).
+\newblock {Stability and optimization of queueing networks and their fluid
+  models}.
+\newblock In Yin, G.~G. and Zhang, Q., editors, {\em Mathematics of Stochastic
+  Manufacturing Systems}, pages 175--199. American Mathematical Society,
+  Providence, RI.
+
+\bibitem[\protect\astroncite{Meyn}{2007}]{Meyn2007}
+Meyn, S. (2007).
+\newblock {\em {Control techniques for complex networks}}.
+\newblock Cambridge University Press.
+
+\bibitem[\protect\astroncite{Meyn and Tweedie}{2009}]{Meyn2009}
+Meyn, S. and Tweedie, R.~L. (2009).
+\newblock {\em {Markov Chains and Stochastic Stability}}.
+\newblock Cambridge University Press, Cambridge, 2nd edition.
+
+\bibitem[\protect\astroncite{Mnih et~al.}{2015}]{Mnih2015}
+Mnih, V., Kavukcuoglu, K., Silver, D., Rusu, A.~A., Veness, J., Bellemare,
+  M.~G., Graves, A., Riedmiller, M., Fidjeland, A.~K., Ostrovski, G., Petersen,
+  S., Beattie, C., Sadik, A., Antonoglou, I., King, H., Kumaran, D., Wierstra,
+  D., Legg, S., and Hassabis, D. (2015).
+\newblock {Human-level control through deep reinforcement learning}.
+\newblock {\em Nature}, 518(7540):529--533.
+
+\bibitem[\protect\astroncite{Moallemi et~al.}{2008}]{MoalKumaVanR2008}
+Moallemi, C., Kumar, S., and {Van Roy}, B. (2008).
+\newblock Approximate and data-driven dynamic programming for queueing
+  networks.
+\newblock Preprint.
+
+\bibitem[\protect\astroncite{Moritz et~al.}{2018}]{Moritz2018}
+Moritz, P., Nishihara, R., Wang, S., Tumanov, A., Liaw, R., Liang, E., Elibol,
+  M., Yang, Z., Paul, W., Jordan, M.~I., and Stoica, I. (2018).
+\newblock {Ray: A Distributed Framework for Emerging AI Applications}.
+
+\bibitem[\protect\astroncite{Nelson}{1989}]{Nelson1989}
+Nelson, B.~L. (1989).
+\newblock {Batch size effects on the efficiency of control variates in
+  simulation}.
+\newblock {\em European Journal of Operational Research}, 43(2):184--196.
+
+\bibitem[\protect\astroncite{OpenAI}{2019}]{OpenAI2019a}
+OpenAI (2019).
+\newblock {Dota 2 with Large Scale Deep Reinforcement Learning}.
+
+\bibitem[\protect\astroncite{Paschalidis et~al.}{2004}]{Paschalidis2004}
+Paschalidis, I., Su, C., and Caramanis, M. (2004).
+\newblock {Target-Pursuing Scheduling and Routing Policies for Multiclass
+  Queueing Networks}.
+\newblock {\em IEEE Transactions on Automatic Control}, 49(10):1709--1722.
+
+\bibitem[\protect\astroncite{Perkins and Kumar}{1989}]{PerkKuma1989}
+Perkins, J.~R. and Kumar, P.~R. (1989).
+\newblock Stable distributed real-time scheduling of flexible
+  manufacturing/assembly/disassembly systems.
+\newblock {\em IEEE Transactions on Automatic Control}, AC-34:139--148.
+
+\bibitem[\protect\astroncite{Puterman}{2005}]{Puterman2005}
+Puterman, M.~L. (2005).
+\newblock {\em {Markov decision processes : discrete stochastic dynamic
+  programming}}.
+\newblock Wiley-Interscience.
+
+\bibitem[\protect\astroncite{Ramirez-Hernandez and
+  Fernandez}{2007}]{Ramirez-Hernandez2007}
+Ramirez-Hernandez, J.~A. and Fernandez, E. (2007).
+\newblock {An Approximate Dynamic Programming Approach for Job Releasing and
+  Sequencing in a Reentrant Manufacturing Line}.
+\newblock In {\em 2007 IEEE International Symposium on Approximate Dynamic
+  Programming and Reinforcement Learning}, pages 201--208. IEEE.
+
+\bibitem[\protect\astroncite{Schulman et~al.}{2015}]{Schulman2015}
+Schulman, J., Levine, S., Moritz, P., Jordan, M.~I., and Abbeel, P. (2015).
+\newblock {Trust Region Policy Optimization}.
+\newblock In {\em Proceeding ICML'15}, pages 1889--1897.
+
+\bibitem[\protect\astroncite{Schulman et~al.}{2016}]{Schulman2016}
+Schulman, J., Moritz, P., Levine, S., Jordan, M.~I., and Abbeel, P. (2016).
+\newblock {High-Dimensional Continuous Control Using Generalized Advantage
+  Estimation}.
+\newblock In {\em ICLR}.
+
+\bibitem[\protect\astroncite{Schulman et~al.}{2017}]{Schulman2017}
+Schulman, J., Wolski, F., Dhariwal, P., Radford, A., and Klimov, O. (2017).
+\newblock {Proximal Policy Optimization Algorithms}.
+
+\bibitem[\protect\astroncite{Schweitzer}{1968}]{Schweitzer1968}
+Schweitzer, P.~J. (1968).
+\newblock {Perturbation theory and finite Markov chains}.
+\newblock {\em Journal of Applied Probability}, 5(2):401--413.
+
+\bibitem[\protect\astroncite{Serfozo}{1979}]{Serfozo1979}
+Serfozo, R.~F. (1979).
+\newblock {Technical Note—An Equivalence Between Continuous and Discrete Time
+  Markov Decision Processes}.
+\newblock {\em Operations Research}, 27(3):616--620.
+
+\bibitem[\protect\astroncite{Silver et~al.}{2017}]{Silver2017}
+Silver, D., Schrittwieser, J., Simonyan, K., Antonoglou, I., Huang, A., Guez,
+  A., Hubert, T., Baker, L., Lai, M., Bolton, A., Chen, Y., Lillicrap, T., Hui,
+  F., Sifre, L., van~den Driessche, G., Graepel, T., and Hassabis, D. (2017).
+\newblock {Mastering the game of Go without human knowledge}.
+\newblock {\em Nature}, 550(7676):354--359.
+
+\bibitem[\protect\astroncite{Srikant and Ying}{2014}]{SrikYing2014}
+Srikant, R. and Ying, L. (2014).
+\newblock {\em Communication Networks: An Optimization, Control and Stochastic
+  Networks Perspective}.
+\newblock Cambridge University Press, Cambridge, UK.
+
+\bibitem[\protect\astroncite{Sutton and Barto}{2018}]{Sutton2018}
+Sutton, R.~S. and Barto, A.~G. (2018).
+\newblock {\em {Reinforcement learning : an introduction}}.
+\newblock MIT press, 2nd edition.
+
+\bibitem[\protect\astroncite{Thomas}{2014}]{Thomas2014}
+Thomas, P.~S. (2014).
+\newblock {Bias in Natural Actor-Critic Algorithms}.
+\newblock In {\em Proceedings of the 31 st International Conference on Machine
+  Learning}.
+
+\bibitem[\protect\astroncite{Veatch}{2015}]{Veatch2015}
+Veatch, M.~H. (2015).
+\newblock {Approximate linear programming for networks: Average cost bounds}.
+\newblock {\em Computers {\&} Operations Research}, 63:32--45.
+
+\bibitem[\protect\astroncite{Wagner}{1975}]{Wagner1975}
+Wagner, H.~M. (1975).
+\newblock {\em {Principles of Operations Research: with applications to
+  managerial decisions}}.
+\newblock Englewood Cliffs, N.J. : Prentice-Hall, 2nd edition.
+
+\bibitem[\protect\astroncite{Wang et~al.}{2016}]{Wang2016}
+Wang, Z., Bapst, V., Heess, N., Mnih, V., Munos, R., Kavukcuoglu, K., and
+  de~Freitas, N. (2016).
+\newblock {Sample Efficient Actor-Critic with Experience Replay}.
+
+\bibitem[\protect\astroncite{Willams}{1998}]{Will1998}
+Willams, R.~J. (1998).
+\newblock Some recent developments for queueing networks.
+\newblock In Accardi, L. and Heyde, C.~C., editors, {\em Probability Towards
+  2000}, pages 340--456. Springer.
+
+\bibitem[\protect\astroncite{Wu et~al.}{2017}]{Wu2017}
+Wu, Y., Mansimov, E., Liao, S., Grosse, R., and Ba, J. (2017).
+\newblock {Scalable trust-region method for deep reinforcement learning using
+  Kronecker-factored approximation}.
+\newblock In {\em Proceedings of the 31st International Conference on Neural
+  Information Processing Systems}, pages 5285--5294.
+
+\end{thebibliography}
