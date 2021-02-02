@@ -21,7 +21,7 @@ import datetime
 import copy
 ray.init(temp_dir='/tmp/ray2')
 
-MAX_ACTORS = 2  # max number of parallel simulations
+MAX_ACTORS = 50  # max number of parallel simulations
 
 def diag_dot(A, B):
     # returns np.diag(np.dot(A, B))
