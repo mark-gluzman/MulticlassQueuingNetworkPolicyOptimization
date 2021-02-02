@@ -21,7 +21,7 @@ import datetime
 import copy
 ray.init(temp_dir='/tmp/ray2')
 
-MAX_ACTORS = 50  # max number of parallel simulations
+MAX_ACTORS = 2  # max number of parallel simulations
 
 def diag_dot(A, B):
     # returns np.diag(np.dot(A, B))
@@ -551,7 +551,7 @@ def main(network_id, num_policy_iterations, gamma, lam, kl_targ, batch_size, hid
     weights_set.append(policy.get_weights())
     scaler_set.append(copy.copy(scaler))
 
-    performance_evolution_all, ci_all = run_weights(network_id, weights_set, policy, scaler,cycles = 10**7)
+    performance_evolution_all, ci_all = run_weights(network_id, weights_set, policy, scaler,cycles = 10**6)
 
     file_res = os.path.join(logger.path_weights, 'average_' + str(performance_evolution_all[-1]) + '+-' +str(ci_all[-1]) + '.txt')
     file = open(file_res, "w")
@@ -578,7 +578,7 @@ if __name__ == "__main__":
 
 
     start_time = datetime.datetime.now()
-    network = pn.ProcessingNetwork.from_name('criss_crossBL') # queuing network declaration
+    network = pn.ProcessingNetwork.from_name('criss_crossIH') # queuing network declaration
     end_time = datetime.datetime.now()
     time_policy = end_time - start_time
     print('time of queuing network object creation:', int((time_policy.total_seconds() / 60) * 100) / 100., 'minutes')
@@ -604,7 +604,7 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--episode_duration', type=int, help='Number of time-steps per an episode',
                         default = 10**6)
     parser.add_argument('-y', '--cycles_num', type=int, help='Number of cycles',
-                        default = 2000)
+                        default = 5000)
     parser.add_argument('-c', '--clipping_parameter', type=float, help='Initial clipping parameter',
                         default = 0.2)
     parser.add_argument('-s', '--skipping_steps', type=int, help='Number of steps for which control is fixed',
