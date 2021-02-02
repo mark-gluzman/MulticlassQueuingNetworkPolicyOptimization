@@ -72,8 +72,8 @@ class Policy(object):
         hid1_size = self.obs_dim * self.hid1_mult  # 10 empirically determined
         hid3_size = len(self.act_dim) * 10  # 10 empirically determined
         hid2_size = int(np.sqrt(hid1_size * hid3_size))
-        # heuristic to set learning rate based on NN size (tuned on 'Hopper-v1')
-        self.lr = 5. * 10**(-4)  # 9e-4 empirically determined
+        # heuristic to set learning rate based on NN size
+        self.lr = 9. * 10**(-4)  # 9e-4 empirically determined
         # 3 hidden layers with tanh activations
         out = tf.layers.dense(self.obs_ph, hid1_size, tf.tanh,
                               kernel_initializer=tf.random_normal_initializer(
