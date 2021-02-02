@@ -7,7 +7,7 @@ Written by Patrick Coady (pat-coady.github.io)
 import tensorflow as tf
 import numpy as np
 from sklearn.utils import shuffle
-import keras
+
 
 class NNValueFunction(object):
     """ NN-based state-value function """
